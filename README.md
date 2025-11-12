@@ -1,17 +1,18 @@
 <div align="center">
 
-# ✨ **Clairis**  
+# 🧿 **Clairis**  
+
 ### *Your Agentic AI Form Companion*
+<img width="1024" height="329" alt="image" src="https://github.com/user-attachments/assets/5e764993-00d0-45b6-8148-9e28411e0ac5" />
 
 > **Turn any form into a natural, inclusive conversation — instantly.**  
 > **100% local • Serverless • Privacy-first • Multimodal**
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/clairis?style=social)](https://github.com/yourusername/clairis/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/wizardwithcodehazard/clairis?style=social)](https://github.com/wizardwithcodehazard/clairis/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-4285F4?logo=google-chrome&logoColor=white)
 ![n8n](https://img.shields.io/badge/n8n-Local_Orchestrator-FF6D60?logo=n8n&logoColor=white)
 
-<img src="https://via.placeholder.com/1200x600/1a1a2e/eeeeee?text=Clairis+%E2%80%94+Intelligent+Form+Assistance+In+Action" alt="Clairis Hero" width="100%"/>
 
 </div>
 
@@ -143,9 +144,16 @@ npx n8n
 
 <div align="center">
 
-| **Conversational Magic** | **Vision Extraction** | **n8n Workflow** |
-|--------------------------|------------------------|------------------|
-| <img src="https://via.placeholder.com/600x350/16213f/ffffff?text=Form+Filled+%2B+Empathetic+Tip" alt="Form filled with suggestion"/> | <img src="https://via.placeholder.com/600x350/0d1b2a/ffffff?text=ID+→+Text+Extracted+Instantly" alt="ID to text"/> | <img src="https://via.placeholder.com/600x200/1b263b/ffffff?text=Webhook+→+Gemini+→+Respond" alt="n8n flow"/> |
+### **n8n Workflow**
+<img alt="n8n Workflow" src="https://github.com/user-attachments/assets/94195e3f-0bc5-4d58-b7e4-df4c29855c93" width="600" />
+
+### **Clairis Extension**
+<table>
+<tr>
+<td><img width="274" height="398" alt="Conversational Magic" src="https://github.com/user-attachments/assets/e5c1809f-46e6-4619-8c4c-3abb827c3c07" /></td>
+<td><img width="343" height="470" alt="Vision Extraction" src="https://github.com/user-attachments/assets/8d271ea0-1519-4ede-bd7e-f46d78a8ffc4" /></td>
+</tr>
+</table>
 
 </div>
 
@@ -177,24 +185,20 @@ npx n8n
 
 ```
 clairis/
-├── extension/
-│   ├── manifest.json
-│   ├── popup.html
-│   ├── popup.js          # Core logic + prompts
-│   ├── content.js        # Form injection
-│   └── icons/
-├── n8n-workflow.json     # Import this!
+├── manifest.json
+├── popup.html
+├── popup.js          # Core logic 
+├── icons
 └── README.md
 ```
 
 ---
-
 ## 🌱 **Contributing**
 
 We welcome **forks, issues, and PRs**!
 
 ```bash
-git clone https://github.com/yourusername/clairis.git
+git clone https://github.com/wizardwithcodehazard/clairis.git
 # Make your magic
 git commit -m "Add Telugu support"
 git push
@@ -212,8 +216,6 @@ git push
 
 ### **Clairis doesn’t just fill forms.**  
 ### **It understands people.**
-
-<img src="https://via.placeholder.com/80x80/4ade80/ffffff?text=✨" alt="sparkle"/>
 
 **Made with precision • Runs with empathy**
 
