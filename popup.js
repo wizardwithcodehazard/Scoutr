@@ -20,11 +20,11 @@ const fileStatus = document.getElementById('file-status');
 // --- API & WEBHOOK URLS ---
 // 1. You MUST set your Gemini API key here for client-side image processing
 // NOTE: This key is used directly in the browser!
-const GEMINI_API_KEY = "AIzaSyA0GkoJsohLKSj09TI-IdpN1kK7BqaUBkc"; 
+const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; // <-- Set your Gemini API key here
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 // 2. This is your ONLY remaining n8n workflow (the Form Filler)
-const FORM_FILLER_WEBHOOK_URL = "http://localhost:5678/webhook/f4a0d98c-4fb5-4f43-b313-773cec344280"; 
+const FORM_FILLER_WEBHOOK_URL = "PASTELINKTOHEREN8NWEBHOOK"; // <-- Set your n8n webhook URL here
 
 // --- GLOBAL PROFILES ARRAY ---
 let allProfiles = [];
