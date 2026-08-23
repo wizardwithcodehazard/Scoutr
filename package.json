@@ -19,5 +19,9 @@
     "job-automation"
   ],
   "author": "Sahil",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.4.2"
+  }
 }

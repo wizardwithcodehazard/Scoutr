@@ -141,11 +141,22 @@ async function buildFeed() {
   // 4. Wellfound / AngelList Live Stream
   tasks.push((async () => {
     try {
-      const data = await fetchHttps('https://remotive.com/api/remote-jobs?limit=30', 3000);
+      const data = await fetchHttps('https://remotive.com/api/remote-jobs?category=software-dev&limit=25', 3500);
       if (data && Array.isArray(data.jobs)) {
+        const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
         for (const item of data.jobs) {
           const url = item.url || '';
-          if (seenUrls.has(url)) continue;
+          if (!url || seenUrls.has(url)) continue;
+
+          if (item.publication_date) {
+            const published = new Date(item.publication_date).getTime();
+            if (!isNaN(published) && published < cutoff) continue;
+          }
+
+          const rawTitle = item.title || '';
+          const nonTechCheck = /\b(assistant|reviewer|moderator|receptionist|telemarketer|transcriptionist|deduplication)\b/i;
+          if (nonTechCheck.test(rawTitle)) continue;
+
           seenUrls.add(url);
 
           jobs.push({
@@ -155,12 +166,12 @@ async function buildFeed() {
             collectorId: 'c_wf_talent_41e9',
             company: item.company_name || 'Tech Startup',
             batch: 'Series A/B',
-            title: item.title || 'Software Engineer',
+            title: rawTitle || 'Software Engineer',
             location: item.candidate_required_location || 'Remote',
-            salaryRange: item.salary && item.salary.includes('$') ? item.salary : '$150,000 - $225,000',
+            salaryRange: item.salary && item.salary.includes('$') ? item.salary : '$140,000 - $210,000',
             equity: '0.1% - 0.75%',
             techStack: (item.tags && item.tags.length > 0 ? item.tags : ['TypeScript', 'React', 'Python', 'AI/LLM']).slice(0, 4),
-            description: (item.description || item.title).replace(/<[^>]*>?/gm, '').slice(0, 220) + '...',
+            description: (item.description || rawTitle).replace(/<[^>]*>?/gm, '').slice(0, 220) + '...',
             applyUrl: url,
             postedDate: (item.publication_date || '').split('T')[0] || new Date().toISOString().split('T')[0],
             healthStatus: 'live_verified'
@@ -180,9 +191,10 @@ async function buildFeed() {
             const story = await fetchHttps(`https://hacker-news.firebaseio.com/v0/item/${storyId}.json`, 2000);
             if (story && story.title) {
               const rawTitle = story.title;
-              const parts = rawTitle.split(/is hiring|Hiring|is looking for/i);
+              const parts = rawTitle.split(/\bis hiring\b|\bIs Hiring\b|\bis looking for\b/i);
               const company = parts[0] ? parts[0].trim() : 'YC Startup';
-              const roleTitle = parts[1] ? parts[1].trim() : rawTitle;
+              let roleTitle = (parts[1] || rawTitle).trim().replace(/^(a|an|the)\s+/i, '');
+              roleTitle = roleTitle.charAt(0).toUpperCase() + roleTitle.slice(1);
               const url = story.url || `https://news.ycombinator.com/item?id=${storyId}`;
 
               if (!seenUrls.has(url)) {
@@ -196,10 +208,10 @@ async function buildFeed() {
                   batch: 'YC Batch',
                   title: roleTitle.slice(0, 80),
                   location: 'San Francisco, CA / Remote',
-                  salaryRange: '$160,000 - $240,000',
+                  salaryRange: 'Competitive',
                   equity: '0.5% - 2.0%',
                   techStack: ['Python', 'TypeScript', 'React', 'FastAPI', 'AI/LLM'],
-                  description: `YC Startup role: ${rawTitle}. Live scraped via Bright Data Scraper Studio Collector c_mt4s1dwc1n61l4s9i4.`,
+                  description: `Join ${company} as a ${roleTitle} to work on cutting-edge systems and scale early-stage startup products.`,
                   applyUrl: url,
                   postedDate: new Date(story.time * 1000 || Date.now()).toISOString().split('T')[0],
                   healthStatus: 'live_verified'

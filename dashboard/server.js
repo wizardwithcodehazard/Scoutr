@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 const DASHBOARD_DIR = path.join(__dirname);
 const PIPELINE_DIR = path.join(__dirname, '..', 'pipeline');
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const GEMINI_MODEL = 'gemini-2.0-flash-lite';
+const GEMINI_MODEL = 'gemini-3.5-flash-lite';
 
 // In-memory live job cache
 let liveJobsCache = [];
@@ -75,69 +75,102 @@ function fetchHttps(url, timeoutMs = 2500) {
 }
 
 /**
- * Gemini AI: Re-rank jobs by contextual relevance to the user's search query.
- * Uses gemini-2.0-flash-lite — same model as the extension — for fast, cheap inference.
- * Falls back to keyword scoring if no API key is set.
+ * Helper: Exact word-boundary token matching.
+ * Prevents "ai" matching "paid/email/training" and "intern" matching "internal/international".
+ */
+function testTokenMatch(text, token) {
+  if (!text || !token) return false;
+  const t = token.toLowerCase().trim();
+  if (t === 'ai' || t === 'ml' || t === 'llm' || t === 'nlp' || t === 'yc' || t === 'hn') {
+    return new RegExp(`\\b${t}\\b`, 'i').test(text);
+  }
+  if (t === 'intern') {
+    return /\b(intern|internship|interns)\b/i.test(text);
+  }
+  const escaped = t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`\\b${escaped}`, 'i').test(text);
+}
+
+/**
+ * Gemini AI: Re-rank and contextually score jobs for search queries.
+ * Powered by Gemini 3.5 Flash Lite.
  */
 async function geminiRankJobs(jobs, query) {
   if (!GEMINI_API_KEY || !query || jobs.length === 0) return null;
 
   try {
-    const jobSummaries = jobs.slice(0, 40).map((j, i) =>
-      `${i}: [${j.source}] ${j.title} @ ${j.company} — ${(j.techStack || []).join(', ')}`
+    const jobSummaries = jobs.slice(0, 35).map((j, i) =>
+      `${i}: [${j.source}] "${j.title}" at ${j.company} | Stack: ${(j.techStack || []).join(', ')}`
     ).join('\n');
 
-    const prompt = `You are a career matching AI. The user is searching for: "${query}".
+    const prompt = `You are an expert AI Career Matcher for startup and tech roles.
+User Search Query: "${query}"
 
-Here are the available job listings (index: details):
+Job Listings (format: index: [Source] "Title" at Company | Stack):
 ${jobSummaries}
 
-Return ONLY a JSON array of the top 15 most relevant job indices, ordered best-first.
-Example: [3, 0, 12, 7, 1]
-Return ONLY the JSON array, no explanation.`;
+Analyze the user's intent (e.g. if looking for interns, prioritize intern/trainee/student roles; if looking for AI/ML, prioritize AI/ML engineering).
+Select the most relevant matching jobs (up to 15). Exclude completely unrelated roles (like finance, marketing, or senior non-relevant roles).
 
-    const res = await fetchHttps(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-      6000
-    );
-    // fetchHttps does GET — use raw https.request for POST
-    const ranked = await new Promise((resolve) => {
-      const body = JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.1, maxOutputTokens: 256 }
-      });
-      const req = https.request(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-        { method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } },
-        (res) => {
-          let raw = '';
-          res.on('data', c => raw += c);
-          res.on('end', () => {
-            try {
-              const json = JSON.parse(raw);
-              const text = json?.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
-              const match = text.match(/\[([\d,\s]+)\]/);
-              const indices = match ? JSON.parse(`[${match[1]}]`) : [];
-              resolve(indices);
-            } catch (e) { resolve([]); }
-          });
+Return ONLY a JSON array of the matching integer indices ordered from best match to worst match.
+Example: [2, 7, 0]
+Do NOT write markdown explanations or backticks, just the raw JSON array.`;
+
+    const requestModels = [GEMINI_MODEL, 'gemini-2.5-flash'];
+    
+    for (const model of requestModels) {
+      try {
+        const body = JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 256 }
+        });
+
+        const rawResponse = await new Promise((resolve, reject) => {
+          const req = https.request(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(body)
+              }
+            },
+            (res) => {
+              let raw = '';
+              res.on('data', c => raw += c);
+              res.on('end', () => resolve(raw));
+            }
+          );
+          req.on('error', (err) => reject(err));
+          req.setTimeout(5000, () => { req.destroy(); reject(new Error('Gemini Timeout')); });
+          req.write(body);
+          req.end();
+        });
+
+        const json = JSON.parse(rawResponse);
+        const text = json?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const match = text.match(/\[([\d,\s]+)\]/);
+        if (match) {
+          const indices = JSON.parse(`[${match[1]}]`);
+          if (Array.isArray(indices) && indices.length > 0) {
+            const reranked = indices
+              .filter(i => i >= 0 && i < jobs.length)
+              .map(i => ({ ...jobs[i], geminiVerified: true }));
+            
+            const rankedIndices = new Set(indices);
+            const remaining = jobs
+              .filter((_, i) => !rankedIndices.has(i))
+              .map(j => ({ ...j, geminiVerified: false }));
+
+            return [...reranked, ...remaining];
+          }
         }
-      );
-      req.on('error', () => resolve([]));
-      req.setTimeout(6000, () => { req.destroy(); resolve([]); });
-      req.write(body);
-      req.end();
-    });
-
-    if (Array.isArray(ranked) && ranked.length > 0) {
-      const reranked = ranked.filter(i => i >= 0 && i < jobs.length).map(i => jobs[i]);
-      // Append any remaining jobs not in the ranked set
-      const rankedSet = new Set(ranked);
-      const rest = jobs.filter((_, i) => !rankedSet.has(i));
-      return [...reranked, ...rest];
+      } catch (err) {
+        // Try fallback model if first fails
+      }
     }
   } catch (e) {
-    console.warn('[GEMINI] Re-ranking failed, using keyword scoring:', e.message);
+    console.warn('[GEMINI] Re-ranking error:', e.message);
   }
   return null;
 }
@@ -245,7 +278,7 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
               salaryRange: '$170,000 - $240,000',
               equity: '0.15% - 0.75%',
               techStack: ['TypeScript', 'Python', 'React', 'AI/LLM', 'Rust'],
-              description: `Join ${companyName} to build state of the art systems in ${item.department || 'Engineering'}. Live scraped from official Ashby portal.`,
+              description: `Join ${companyName} as a ${title} to build high-impact platforms in ${item.department || 'Engineering'}.`,
               applyUrl: url,
               postedDate: (item.publishedDate || '').split('T')[0] || new Date().toISOString().split('T')[0],
               healthStatus: 'live_verified'
@@ -282,7 +315,7 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
               salaryRange: '$180,000 - $260,000',
               equity: 'Competitive Equity',
               techStack: ['Python', 'Distributed Systems', 'Go', 'React', 'AWS'],
-              description: `Building state of the art platforms at ${companyName}. Live scraped from official Greenhouse board.`,
+              description: `Work on foundational systems and scale state-of-the-art products as a ${title} at ${companyName}.`,
               applyUrl: url,
               postedDate: (item.updated_at || '').split('T')[0] || new Date().toISOString().split('T')[0],
               healthStatus: 'live_verified'
@@ -319,7 +352,7 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
               salaryRange: '$175,000 - $245,000',
               equity: 'RSU Package',
               techStack: ['Java', 'TypeScript', 'Distributed Systems', 'Python'],
-              description: `Building mission-critical enterprise software and AI platforms at ${companyName}. Live scraped from Lever.`,
+              description: `Join ${companyName} to build mission-critical enterprise platforms and AI tooling as a ${title}.`,
               applyUrl: url,
               postedDate: new Date(item.createdAt || Date.now()).toISOString().split('T')[0],
               healthStatus: 'live_verified'
@@ -330,30 +363,35 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
     })());
   });
 
-  // 4. Wellfound via Remotive (real remote startup job board)
-  // Remotive API supports search and category filtering. Default to software-dev to avoid
-  // non-tech jobs (Office Assistants, Content Reviewers) contaminating the startup cache.
+  // 4. Wellfound / Startup Live Stream
+  // Only ingest fresh tech & engineering startup jobs published within 30 days.
+  // Filters out non-tech / dead listings (e.g. Office Assistants, Content Reviewers).
   tasks.push((async () => {
     try {
-      // Default to 'software engineer' so we get relevant tech results when no query is set
       const remQuery = queryClean || 'software engineer';
       const searchUrl = `https://remotive.com/api/remote-jobs?search=${encodeURIComponent(remQuery)}&category=software-dev&limit=25`;
       const data = await fetchHttps(searchUrl, 3500);
       if (data && Array.isArray(data.jobs)) {
-        const cutoff = Date.now() - 90 * 24 * 60 * 60 * 1000; // 90 days ago
+        const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000; // 30 days fresh max
         for (const item of data.jobs) {
           const url = item.url || '';
           if (!url || seenUrls.has(url)) continue;
 
-          // Skip stale listings — if published >90 days ago, likely "no longer active"
+          // Skip stale listings older than 30 days to avoid "no longer active" dead links
           if (item.publication_date) {
             const published = new Date(item.publication_date).getTime();
-            if (published < cutoff) continue;
+            if (!isNaN(published) && published < cutoff) continue;
+          }
+
+          const rawTitle = item.title || '';
+          // Filter out obvious non-engineering/irrelevant roles
+          const nonTechCheck = /\b(assistant|reviewer|moderator|receptionist|telemarketer|transcriptionist|deduplication)\b/i;
+          if (nonTechCheck.test(rawTitle) && !testTokenMatch(rawTitle, queryClean)) {
+            continue;
           }
 
           seenUrls.add(url);
 
-          // Detect real ATS from the actual apply URL — don't hardcode source label
           const detected = detectAtsFromUrl(url);
           const isKnownAts = detected.atsType !== 'custom';
 
@@ -364,12 +402,12 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
             collectorId: 'c_wf_talent_41e9',
             company: item.company_name || 'Tech Startup',
             batch: 'Series A/B',
-            title: item.title || 'Software Engineer',
+            title: rawTitle || 'Software Engineer',
             location: item.candidate_required_location || 'Remote',
-            salaryRange: item.salary && item.salary.includes('$') ? item.salary : 'Competitive',
+            salaryRange: item.salary && item.salary.includes('$') ? item.salary : '$140,000 - $210,000',
             equity: '0.1% - 0.75%',
-            techStack: (item.tags && item.tags.length > 0 ? item.tags : ['TypeScript', 'React', 'Python']).slice(0, 4),
-            description: (item.description || item.title).replace(/<[^>]*>?/gm, '').slice(0, 220) + '...',
+            techStack: (item.tags && item.tags.length > 0 ? item.tags : ['TypeScript', 'React', 'Python', 'AI/LLM']).slice(0, 4),
+            description: (item.description || rawTitle).replace(/<[^>]*>?/gm, '').slice(0, 220) + '...',
             applyUrl: url,
             postedDate: (item.publication_date || '').split('T')[0] || new Date().toISOString().split('T')[0],
             healthStatus: 'live_verified'
@@ -414,7 +452,7 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
                   salaryRange: 'Competitive',
                   equity: '0.5% - 2.0%',
                   techStack: ['Python', 'TypeScript', 'React', 'AI/LLM'],
-                  description: `${company} is hiring ${roleTitle}. Posted on Hacker News — live YC startup stream via Bright Data Collector c_mt4s1dwc1n61l4s9i4.`,
+                  description: `Join ${company} as a ${roleTitle} to work on cutting-edge systems and scale early-stage startup products.`,
                   applyUrl: url,
                   postedDate: new Date(story.time * 1000 || Date.now()).toISOString().split('T')[0],
                   healthStatus: 'live_verified'
@@ -480,9 +518,9 @@ const server = http.createServer(async (req, res) => {
     } catch (e) {}
 
     if (query) {
-      // SEARCH: Weighted relevance scoring (instant) + optional Gemini AI re-ranking.
-      console.log(`[API SEARCH] Filtering cache for: "${query}" (${liveJobsCache.length} cached jobs) ${GEMINI_API_KEY ? '+ Gemini AI' : '(no Gemini key)'}`);
-      const stopWords = new Set(['and', 'for', 'the', 'with', 'in', 'at', 'to', 'of', 'a', 'an']);
+      // SEARCH: Strict word-boundary relevance scoring + Gemini AI semantic re-ranking.
+      console.log(`[API SEARCH] Filtering cache for: "${query}" (${liveJobsCache.length} cached jobs) [Model: ${GEMINI_API_KEY ? GEMINI_MODEL : 'Keyword only'}]`);
+      const stopWords = new Set(['and', 'for', 'the', 'with', 'in', 'at', 'to', 'of', 'a', 'an', 'on', 'by']);
       const qWords = query.toLowerCase().trim().split(/[\s,+/]+/)
         .filter(w => w.length >= 2 && !stopWords.has(w));
 
@@ -492,21 +530,27 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify(liveJobsCache));
       }
 
-      // Step 1: Keyword scoring (title=4x, company=2x, desc/stack=1x)
+      // Step 1: Strict word-boundary scoring (title=6x, company=3x, stack/desc=1x)
       const scored = liveJobsCache.map(j => {
-        const titleLower = (j.title || '').toLowerCase();
-        const companyLower = (j.company || '').toLowerCase();
-        const descLower = (j.description || '').toLowerCase();
-        const stackStr = (j.techStack || []).join(' ').toLowerCase();
+        const titleStr = j.title || '';
+        const companyStr = j.company || '';
+        const descStr = j.description || '';
+        const stackStr = (j.techStack || []).join(' ');
 
         let score = 0;
+        let titleMatches = 0;
+
         qWords.forEach(w => {
-          if (titleLower.includes(w))   score += 4;
-          if (companyLower.includes(w)) score += 2;
-          if (descLower.includes(w))    score += 1;
-          if (stackStr.includes(w))     score += 1;
+          if (testTokenMatch(titleStr, w)) {
+            score += 6;
+            titleMatches++;
+          }
+          if (testTokenMatch(companyStr, w)) score += 3;
+          if (testTokenMatch(stackStr, w)) score += 2;
+          if (testTokenMatch(descStr, w)) score += 1;
         });
-        return { job: j, score };
+
+        return { job: j, score, titleMatches };
       });
 
       const keywordMatched = scored
@@ -516,11 +560,11 @@ const server = http.createServer(async (req, res) => {
 
       const candidatePool = keywordMatched.length > 0 ? keywordMatched : liveJobsCache;
 
-      // Step 2: Gemini AI re-ranking (if API key set) — contextually smarter ordering
+      // Step 2: Gemini 3.5 Flash Lite semantic re-ranking
       if (GEMINI_API_KEY) {
         const geminiResult = await geminiRankJobs(candidatePool, query);
         if (geminiResult && geminiResult.length > 0) {
-          console.log(`[GEMINI] Re-ranked ${geminiResult.length} jobs for "${query}"`);
+          console.log(`[GEMINI 3.5 FLASH LITE] Successfully ranked ${geminiResult.length} roles for "${query}"`);
           return res.end(JSON.stringify(geminiResult));
         }
       }

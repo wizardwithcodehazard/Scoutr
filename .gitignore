@@ -18,12 +18,14 @@ Thumbs.db
 ehthumbs.db
 [Dd]esktop.ini
 
-# IDE & Editor Configs
+# IDE, Editor & Agent Artifacts
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.system_generated/
+scratch/
 
 # Temporary & Build Output
 dist/

@@ -284,12 +284,42 @@ function calculateJobMatch(job, profile) {
   return { score, matchedSkills };
 }
 
+function testTokenMatch(text, token) {
+  if (!text || !token) return false;
+  const t = token.toLowerCase().trim();
+  if (t === 'ai' || t === 'ml' || t === 'llm' || t === 'nlp' || t === 'yc' || t === 'hn') {
+    return new RegExp(`\\b${t}\\b`, 'i').test(text);
+  }
+  if (t === 'intern') {
+    return /\b(intern|internship|interns)\b/i.test(text);
+  }
+  const escaped = t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`\\b${escaped}`, 'i').test(text);
+}
+
+let currentPage = 1;
+const paginationContainer = document.getElementById('job-pagination-container');
+
+function getItemsPerPage() {
+  return window.innerWidth <= 768 ? 6 : 10;
+}
+
+window.changeJobPage = function(newPage) {
+  currentPage = newPage;
+  renderJobs();
+  const listPane = document.querySelector('.jobs-list-pane') || jobGrid;
+  if (listPane) {
+    listPane.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
 function renderJobs() {
   if (!jobGrid) return;
 
   const currentProfile = userProfiles[activeProfileIndex];
+  const stopWords = new Set(['and', 'for', 'the', 'with', 'in', 'at', 'to', 'of', 'a', 'an', 'on', 'by']);
   const qWords = searchQuery && searchQuery.trim() 
-    ? searchQuery.toLowerCase().trim().split(/[\s,+/]+/).filter(w => w.length > 0)
+    ? searchQuery.toLowerCase().trim().split(/[\s,+/]+/).filter(w => w.length >= 2 && !stopWords.has(w))
     : [];
 
   // Calculate Match Scores & Relevance Sorting
@@ -298,16 +328,16 @@ function renderJobs() {
     let searchHits = 0;
 
     if (qWords.length > 0) {
-      const titleLower = (job.title || '').toLowerCase();
-      const companyLower = (job.company || '').toLowerCase();
-      const descLower = (job.description || '').toLowerCase();
-      const stackStr = (job.techStack || []).join(' ').toLowerCase();
-      const sourceStr = (job.source || '').toLowerCase();
-      const locStr = (job.location || '').toLowerCase();
-      const combined = `${titleLower} ${companyLower} ${descLower} ${stackStr} ${sourceStr} ${locStr}`;
+      const titleStr = job.title || '';
+      const companyStr = job.company || '';
+      const descStr = job.description || '';
+      const stackStr = (job.techStack || []).join(' ');
 
       qWords.forEach(w => {
-        if (combined.includes(w)) searchHits++;
+        if (testTokenMatch(titleStr, w)) searchHits += 6;
+        else if (testTokenMatch(companyStr, w)) searchHits += 3;
+        else if (testTokenMatch(stackStr, w)) searchHits += 2;
+        else if (testTokenMatch(descStr, w)) searchHits += 1;
       });
     }
 
@@ -331,7 +361,7 @@ function renderJobs() {
     } else if (activeFilter === 'Ashby') {
       matchesSource = (job.source && job.source.toLowerCase().includes('ashby')) || (job.atsType === 'ashby') || (job.applyUrl && job.applyUrl.includes('ashby'));
     } else if (activeFilter === 'Greenhouse') {
-      matchesSource = (job.source && job.source.toLowerCase().includes('greenhouse')) || (job.atsType === 'greenhouse') || (job.applyUrl && job.applyUrl.includes('greenhouse'));
+      matchesSource = (job.source && job.source.toLowerCase().includes('greenhouse')) || (job.atsType === 'greenhouse') || (job.applyUrl && (job.applyUrl.includes('greenhouse') || job.applyUrl.includes('boards.greenhouse.io')));
     } else if (activeFilter === 'Lever') {
       matchesSource = (job.source && job.source.toLowerCase().includes('lever')) || (job.atsType === 'lever') || (job.applyUrl && job.applyUrl.includes('lever'));
     } else if (activeFilter === 'Y Combinator') {
@@ -352,6 +382,10 @@ function renderJobs() {
   if (jobsCountBadge) jobsCountBadge.textContent = filtered.length;
 
   if (filtered.length === 0) {
+    if (paginationContainer) {
+      paginationContainer.style.display = 'none';
+      paginationContainer.innerHTML = '';
+    }
     const term = searchQuery ? `"${escapeHtml(searchQuery)}"` : `"${escapeHtml(activeFilter)}"`;
     jobGrid.innerHTML = `
       <div class="empty-feed-state" style="grid-column: 1 / -1;">
@@ -362,7 +396,16 @@ function renderJobs() {
     return;
   }
 
-  jobGrid.innerHTML = filtered.map((job, idx) => {
+  // Pagination Slice
+  const itemsPerPage = getItemsPerPage();
+  const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedJobs = filtered.slice(startIndex, startIndex + itemsPerPage);
+
+  jobGrid.innerHTML = paginatedJobs.map((job, idx) => {
     const isTopMatch = job.matchScore >= 90;
     const matchPillClass = isTopMatch ? 'star-match-pill top-match' : 'star-match-pill';
 
@@ -374,7 +417,7 @@ function renderJobs() {
     else if (sLower.includes('combinator')) atsClass += ' source-yc';
     else if (sLower.includes('wellfound')) atsClass += ' source-wellfound';
 
-    const isSelected = selectedJobId === job.id || (!selectedJobId && idx === 0);
+    const isSelected = selectedJobId === job.id || (!selectedJobId && idx === 0 && currentPage === 1);
 
     return `
       <div class="job-card ${isSelected ? 'selected' : ''}" data-job-id="${job.id}" onclick="selectJob('${job.id}')">
@@ -386,12 +429,14 @@ function renderJobs() {
                 <strong>${escapeHtml(job.company)}</strong>
                 <span class="${atsClass} mono">${escapeHtml(job.source || 'Scraped')}</span>
                 ${job.batch ? `<span class="batch-pill">${escapeHtml(job.batch)}</span>` : ''}
+                ${job.geminiVerified ? `<span class="batch-pill" style="background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.3);">✨ Gemini AI Match</span>` : ''}
               </div>
             </div>
             <div class="${matchPillClass}">
               <span>${job.matchScore}% Match</span>
             </div>
           </div>
+
 
           <p class="card-desc">${escapeHtml(job.description || '')}</p>
 
@@ -416,9 +461,11 @@ function renderJobs() {
 
   // Auto-select first job if none selected (silently, without forcing mobile-detail-open)
   if (filtered.length > 0) {
-    const targetJob = filtered.find(j => j.id === selectedJobId) || filtered[0];
-    selectedJobId = targetJob.id;
-    renderJobDetail(targetJob, false);
+    const targetJob = paginatedJobs.find(j => j.id === selectedJobId) || paginatedJobs[0] || filtered[0];
+    if (targetJob) {
+      selectedJobId = targetJob.id;
+      renderJobDetail(targetJob, false);
+    }
   }
 
   if (window.lucide && lucide.createIcons) lucide.createIcons();
@@ -774,47 +821,47 @@ function setupEventListeners() {
     });
   });
 
-  // Search & Realtime Dynamic Portal Scraping
+  // Search & Realtime Dynamic Query — filter via server-side relevance ranking
   let searchDebounceTimer = null;
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       searchQuery = e.target.value;
+
+      // Render immediately with client-side filter for instant feedback
       renderJobs();
 
       clearTimeout(searchDebounceTimer);
       const trimmed = (searchQuery || '').trim();
+
       if (trimmed.length >= 2) {
         searchDebounceTimer = setTimeout(async () => {
           const streamPill = document.getElementById('pipeline-status-text');
-          if (streamPill) streamPill.textContent = `Scraping live for "${trimmed}"...`;
-          
+          if (streamPill) streamPill.textContent = `Filtering feed for "${trimmed}"...`;
+
           try {
             const res = await fetch(`/api/jobs?q=${encodeURIComponent(trimmed)}`);
             if (res.ok) {
-              const dynamicJobs = await res.json();
-              if (Array.isArray(dynamicJobs) && dynamicJobs.length > 0) {
-                // Merge freshly scraped jobs into jobsData avoiding duplicates
-                const existingIds = new Set(jobsData.map(j => j.id));
-                let newCount = 0;
-                dynamicJobs.forEach(job => {
-                  if (!existingIds.has(job.id)) {
-                    jobsData.unshift(job);
-                    existingIds.add(job.id);
-                    newCount++;
-                  }
-                });
+              const filteredJobs = await res.json();
+              if (Array.isArray(filteredJobs) && filteredJobs.length > 0) {
+                // Server returned relevance-ranked results — use them as the display set.
+                // Don't merge into jobsData — that pollutes the cache with irrelevant results.
+                // We keep jobsData as the full unfiltered pool and render a subset.
+                // If the search is cleared, renderJobs() will use the full jobsData again.
+                jobsData = filteredJobs;
                 renderJobs();
-                if (newCount > 0) {
-                  showToast(`Scraped ${newCount} live startup roles matching "${trimmed}"!`);
-                }
+                showToast(`Showing ${filteredJobs.length} roles matching "${trimmed}"`);
               }
             }
           } catch (err) {
-            console.warn('[SEARCH SCRAPE] Error:', err);
+            console.warn('[SEARCH] Error:', err);
           } finally {
             if (streamPill) streamPill.textContent = 'Operational';
           }
-        }, 500);
+        }, 600);
+      } else if (trimmed.length === 0) {
+        // Search cleared — reload full feed
+        clearTimeout(searchDebounceTimer);
+        loadJobsFeed(false);
       }
     });
   }
