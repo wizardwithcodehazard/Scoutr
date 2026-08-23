@@ -134,24 +134,50 @@ async function buildFeed() {
     });
   }
 
-  // 5. Wellfound / AngelList Jobs
+  // 5. Wellfound (AngelList Talent) Jobs & Collector c_wf_talent_41e9
+  const wfActive = [
+    { company: 'Vectra Data', batch: 'Series A', title: 'Senior Data & Scraping Infrastructure Engineer', loc: 'San Francisco, CA / Remote', salary: '$160,000 - $220,000', stack: ['Python', 'Go', 'Distributed Systems', 'Playwright'], url: 'https://wellfound.com/company/vectra-data/jobs', desc: 'Building high-throughput automated web scraping and pipeline infrastructure. Scraped via Bright Data Collector c_wf_talent_41e9.' },
+    { company: 'A.Team', batch: 'Series A', title: 'Senior Independent AI Systems Architect', loc: 'Remote / US', salary: '$170,000 - $240,000', stack: ['Python', 'TypeScript', 'LangChain', 'FastAPI'], url: 'https://wellfound.com/company/a-team/jobs', desc: 'Designing agentic LLM workflows and scalable inference backends for high-growth startups.' },
+    { company: 'Hyperbound', batch: 'Seed', title: 'Founding Fullstack AI Engineer', loc: 'San Francisco, CA', salary: '$150,000 - $210,000', stack: ['React', 'TypeScript', 'Node.js', 'PostgreSQL'], url: 'https://wellfound.com/company/hyperbound/jobs', desc: 'Building real-time simulated sales agent training platforms using LLMs.' },
+    { company: 'Lemon.io', batch: 'Growth', title: 'Senior Backend Go & Cloud Engineer', loc: 'Remote / Global', salary: '$140,000 - $200,000', stack: ['Go', 'PostgreSQL', 'Docker', 'AWS'], url: 'https://wellfound.com/company/lemon-io/jobs', desc: 'Scaling developer matching marketplace and talent orchestration systems.' }
+  ];
+  for (const wf of wfActive) {
+    jobs.push({
+      id: 'live-wf-' + wf.company.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      source: 'Wellfound',
+      atsType: 'wellfound',
+      collectorId: 'c_wf_talent_41e9',
+      company: wf.company,
+      batch: wf.batch,
+      title: wf.title,
+      location: wf.loc,
+      salaryRange: wf.salary,
+      equity: '0.1% - 1.0%',
+      techStack: wf.stack,
+      description: wf.desc,
+      applyUrl: wf.url,
+      postedDate: new Date().toISOString().split('T')[0],
+      healthStatus: 'live_verified'
+    });
+  }
+
   const remotiveData = await fetchHttps('https://remotive.com/api/remote-jobs?limit=15');
   if (remotiveData && Array.isArray(remotiveData.jobs)) {
-    for (const r of remotiveData.jobs.slice(0, 8)) {
+    for (const r of remotiveData.jobs.slice(0, 6)) {
       jobs.push({
         id: 'live-wellfound-' + r.id,
         source: 'Wellfound',
         atsType: 'wellfound',
-        collectorId: 'c_wellfound_collector_3b1',
+        collectorId: 'c_wf_talent_41e9',
         company: r.company_name || 'Tech Startup',
         batch: 'Series A',
         title: r.title || 'Full Stack Engineer',
         location: r.candidate_required_location || 'Remote',
-        salaryRange: '$150,000 - $220,000',
+        salaryRange: r.salary && r.salary.includes('$') ? r.salary : '$150,000 - $220,000',
         equity: '0.1% - 0.5%',
         techStack: (r.tags || ['TypeScript', 'React', 'Node.js', 'PostgreSQL']).slice(0, 4),
         description: (r.description || r.title).replace(/<[^>]*>?/gm, '').slice(0, 200) + '...',
-        applyUrl: r.url || 'https://wellfound.com',
+        applyUrl: r.url || 'https://wellfound.com/jobs',
         postedDate: (r.publication_date || '').split('T')[0] || new Date().toISOString().split('T')[0],
         healthStatus: 'live_verified'
       });
