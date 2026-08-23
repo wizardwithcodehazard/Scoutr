@@ -462,6 +462,7 @@ body {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -1054,6 +1055,7 @@ body {
   margin-bottom: 10px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1288,45 +1290,6 @@ body {
 .modal-large {
   max-width: 680px;
 }
-
-.card-header-flex { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; margin-bottom: 8px; }
-.card-title-group h3 { font-size: 14.5px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
-.card-meta { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
-.batch-pill { font-family: var(--font-mono); font-size: 10px; background: #ebf8ff; color: var(--sky-top); border: 1px solid #bee3f8; padding: 1px 5px; border-radius: 4px; font-weight: 600; }
-
-.star-match-pill { font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; background: #feebc8; color: #c05621; padding: 2px 7px; border-radius: 9999px; white-space: nowrap; transition: all 0.2s ease; }
-.star-match-pill.top-match { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
-.source-tag-pill { font-family: var(--font-mono); font-size: 9.5px; background: #f0f4f8; color: #4a5568; border: 1px solid #cbd5e0; padding: 1px 6px; border-radius: 4px; font-weight: 600; }
-.source-tag-pill.source-ashby { background: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; }
-.source-tag-pill.source-greenhouse { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
-.source-tag-pill.source-lever { background: #fffbeb; color: #b45309; border-color: #fde68a; }
-.source-tag-pill.source-yc { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-.source-tag-pill.source-wellfound { background: #ecfeff; color: #0e7490; border-color: #a5f3fc; }
-
-.card-desc { font-size: 12px; color: var(--text-body); line-height: 1.45; margin-bottom: 8px; height: 34px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.card-tags-row { display: flex; align-items: center; gap: 4px; height: 24px; overflow: hidden; }
-.tag-salary { font-family: var(--font-mono); font-size: 10px; font-weight: 600; background: #f0fff4; color: #276749; border: 1px solid #c6f6d5; padding: 2px 5px; border-radius: 4px; white-space: nowrap; }
-.tag-tech { font-family: var(--font-mono); font-size: 10px; background: #edf2f7; color: var(--text-body); padding: 2px 5px; border-radius: 4px; white-space: nowrap; transition: all 0.15s ease; }
-.tag-tech.tag-matched { background: #ebf8ff; color: #2b6cb0; border: 1px solid #90cdf4; font-weight: 700; }
-.card-bottom-bar { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding-top: 8px; border-top: 1px solid #edf2f7; margin-top: 8px; }
-
-.btn-apply-cta {
-  background: #2d3748;
-  color: white;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: background 0.15s ease;
-}
-.btn-apply-cta:hover { background: var(--sky-top); }
 
 /* ==========================================================================
    8. PROFILE & RESUMES BUILDER
