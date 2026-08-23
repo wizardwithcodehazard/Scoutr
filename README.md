@@ -9,12 +9,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Bright Data](https://img.shields.io/badge/Bright_Data-Scraper_Studio-orange.svg)](https://brightdata.com)
 [![Chrome Extension](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-4285F4?logo=google-chrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/intro/)
-[![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.0_Flash-8E75B2?logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
+[![Google Gemini](https://img.shields.io/badge/Google_Gemini-3.5_Flash_Lite-8E75B2?logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-Edge_Functions-F38020?logo=cloudflare&logoColor=white)](https://pages.cloudflare.com/)
 
 <br/>
 
-> **Scrapes the long tail of startup engineering roles across modern career portals, heals broken selector ASTs in $<1.5\text{s}$ with zero downtime, and executes 1-click in-browser application autofill.**
+> **Scrapes the long tail of startup engineering roles across modern career portals, heals broken selector ASTs in $<1.5\text{s}$ with zero downtime, and executes 1-click in-browser application autofill with AI dynamic field suggestions.**
 
 </div>
 
@@ -44,7 +45,7 @@ flowchart TD
     subgraph Extension["Chrome Extension Companion"]
         J["Live ATS Job Page<br/>(Target Application Form)"]
         K["In-Browser DOM Scanner<br/>(scrapePageForForms)"]
-        L["Gemini 2.0 Semantic Mapper<br/>(Dynamic Field Mapping)"]
+        L["Gemini 3.5 Semantic Mapper<br/>(Dynamic Field Mapping & Suggestions)"]
         M["Synthetic Event Dispatcher<br/>(input, change, blur)"]
     end
 
@@ -86,6 +87,7 @@ flowchart TD
 
 ### 4. In-Browser Form Companion (Chrome Extension MV3)
 * **DOM Heuristic Scanner:** Identifies form fields across Ashby, Greenhouse, Lever, Workday, Google Forms, and Microsoft Forms using `aria-label`, parent `<label>`, and placeholder inspection.
+* **Gemini 3.5 Flash Lite Engine:** Correlates candidate profiles with form fields and generates dynamic suggestions for novel/open-ended essay questions.
 * **Synthetic Event Simulation:** Dispatches native `input`, `change`, and `blur` events so reactive frameworks (React, Vue, Next.js) immediately accept autofilled candidate profiles.
 
 ---
@@ -98,9 +100,10 @@ flowchart TD
 | **Proxy & Anti-Bot** | Bright Data Web Unlocker | Residential IP routing and automated CAPTCHA bypassing |
 | **Self-Healing Engine** | Bright Data CLI (`bdata`) | In-place selector AST repair on schema mutations |
 | **Backend Server** | Node.js (Vanilla HTTP/HTTPS) | Zero-dependency high-concurrency API and file server |
+| **Edge Deployment** | Cloudflare Pages & Functions | Serverless edge distribution with $<50\text{ms}$ global latency |
 | **Frontend Architecture** | HTML5, Vanilla CSS3, Modern JS | High-performance, dependency-free command center |
-| **Browser Extension** | Chrome Extensions (Manifest V3) | In-browser DOM form scanner and automated injector |
-| **Semantic AI Engine** | Google Gemini 2.0 Flash | Dynamic field mapping and personalized custom pitch generation |
+| **Browser Extension** | Chrome Extensions (Manifest V3) | In-browser DOM form scanner, Resume OCR, and automated injector |
+| **Semantic AI Engine** | Google Gemini 3.5 Flash Lite | Dynamic field mapping, Resume OCR, and tailored AI suggestions |
 | **Iconography & Fonts** | Lucide Icons, Fragment Mono, Inter | Linear/Raycast-grade minimalist developer aesthetics |
 
 ---
@@ -114,14 +117,14 @@ Scoutr organizes data collection across dedicated ATS pipelines:
 | **YC Startup Collector** | Y Combinator Startups | Company, batch, title, equity, tech stack, apply URL |
 | **Ashby ATS Collector** | Ashby ATS Boards | Role title, department, location, compensation, job ID |
 | **Greenhouse Collector** | Greenhouse Portals | Position title, office location, requisition ID, direct URL |
-| **Wellfound Collector** | Wellfound / Tech Feeds | Startup stage, funding round, remote availability, salary |
+| **Lever ATS Collector** | Lever Portals | Role name, team, commitment type, direct application link |
 
 ---
 
 ## Repository Structure
 
 ```text
-clairis/
+scoutr/
 ├── package.json               # Project configuration, scripts, and dependencies
 ├── .env.example               # Environment variable template (Gemini API key)
 ├── .gitignore                 # Standard Node.js & IDE ignore rules
@@ -136,18 +139,24 @@ clairis/
 ├── dashboard/                 # [Module B: Landing Page & Command Center]
 │   ├── index.html             # Product landing page & macOS card preview
 │   ├── app.html               # Split-explorer dashboard & pipeline tracker
+│   ├── demo_form.html         # Live interactive application form for testing
 │   ├── server.js              # High-concurrency parallel scraper server
 │   ├── dashboard.js           # Multi-profile manager, match scoring, and cache
 │   ├── dashboard.css          # Daytime sky blue tactile design system
 │   ├── jobs_feed.js           # Dynamic feed bundle
 │   ├── jobs_feed.json         # Scraped structured JSON dataset
-│   ├── michael_safety.png     # Product narrative illustration
-│   └── lucide.js              # Vector icon library
+│   ├── _headers               # Cloudflare Pages edge CORS & cache headers
+│   └── _redirects             # Cloudflare Pages clean route rewrites
 │
-└── extension/                 # [Module C: In-Browser Chrome Extension]
+├── functions/                 # [Module C: Cloudflare Edge Functions]
+│   └── api/
+│       ├── jobs.js            # Edge API serving pre-warmed job stream
+│       └── verify-link.js     # Edge link health verification sentinel
+│
+└── extension/                 # [Module D: In-Browser Chrome Extension]
     ├── manifest.json          # Chrome Extension Manifest V3 configuration
-    ├── popup.html             # Companion popup UI
-    ├── popup.js               # Multi-profile loader, DOM scanner, and form filler
+    ├── popup.html             # 3-Tab companion popup UI
+    ├── popup.js               # Multi-profile loader, Resume OCR, DOM scanner, AI suggestions
     ├── popup.css              # Sky blue companion theme
     ├── icon.png               # High-resolution extension icon
     └── lucide.js              # Vector icons
@@ -165,6 +174,7 @@ npm run dashboard
 ```
 * **Landing Page:** [http://localhost:3000](http://localhost:3000)
 * **Command Center App:** [http://localhost:3000/app](http://localhost:3000/app)
+* **Live Demo Form:** [http://localhost:3000/demo_form](http://localhost:3000/demo_form)
 
 ### 2. Load the Chrome Extension (Manifest V3)
 1. Open Google Chrome and navigate to `chrome://extensions`.
@@ -172,11 +182,10 @@ npm run dashboard
 3. Click **Load unpacked** and select the `extension` directory.
 4. Pin **Scoutr** to your browser toolbar.
 
-### 3. Run Self-Healing Scraper Test Suite
-Execute the automated AST repair sentinel to verify recovery logic:
-```bash
-npm test
-```
+### 3. Deploy to Cloudflare Pages (Optional)
+1. In the Cloudflare Dashboard, create a new **Pages** project connected to this Git repository.
+2. Set **Build output directory** to `dashboard`.
+3. Deploy instantly to a global `*.pages.dev` domain with edge API functions.
 
 ---
 
