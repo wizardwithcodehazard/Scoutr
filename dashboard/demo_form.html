@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Athelas — Senior AI Engineer Application</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="shortcut icon" href="favicon.ico">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+
+  <style>
+    body.demo-form-page {
+      background: #f0f4f8;
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: #1e293b;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .form-wrapper {
+      width: 100%;
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-header-card {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      border-top: 8px solid #2563eb;
+      padding: 24px 28px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .form-header-card h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .form-header-card .company-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #2563eb;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .form-header-card p {
+      font-size: 13.5px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .demo-hint-box {
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #1d4ed8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Google Forms Structure */
+    .form-question-card {
+      background: #ffffff;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 18px 24px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-question-card:focus-within {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+
+    .question-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .required-star {
+      color: #ef4444;
+    }
+
+    .g-input {
+      width: 100%;
+      border: none;
+      border-bottom: 1.5px solid #cbd5e1;
+      padding: 8px 0;
+      font-size: 14px;
+      font-family: inherit;
+      color: #0f172a;
+      outline: none;
+      transition: border-color 0.2s ease;
+      background: transparent;
+    }
+
+    .g-input:focus {
+      border-bottom-color: #2563eb;
+    }
+
+    .g-textarea {
+      width: 100%;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: #0f172a;
+      outline: none;
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color 0.2s ease;
+    }
+
+    .g-textarea:focus {
+      border-color: #2563eb;
+    }
+
+    .form-actions-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+
+    .btn-submit {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 11px 28px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    .btn-submit:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .btn-clear {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-clear:hover {
+      color: #0f172a;
+    }
+
+    #submission-banner {
+      display: none;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body class="demo-form-page">
+
+  <div class="form-wrapper">
+    <!-- FORM HEADER -->
+    <div class="form-header-card">
+      <div class="company-tag">✦ Athelas (YC S16) Careers</div>
+      <h1>Senior AI Software Engineer Application</h1>
+      <p>Thank you for your interest in joining Athelas. Please provide your information below to submit your candidacy for our AI & Infrastructure team.</p>
+      
+      <div class="demo-hint-box">
+        <span>⚡ <strong>Scoutr Auto-Fill Demo:</strong> Click the Scoutr extension in your toolbar, then click <strong>"✦ Scan & Auto-Fill Form"</strong> to see autonomous in-browser autofill in action!</span>
+      </div>
+    </div>
+
+    <!-- FORM BODY (Google Forms & ATS Listitem Architecture) -->
+    <form id="application-form" onsubmit="handleFormSubmit(event)">
+      
+      <!-- 1. Full Name -->
+      <div class="form-question-card" role="listitem">
+        <div class="question-title" role="heading">
+          <span>Full Name</span>
+          <span class="required-star">*</span>
+        </div>
+        <input type="text" name="full_name" class="g-input" placeholder="Your answer" required>
+      </div>
+
+      <!-- 2. Email Address -->
+      <div class="form-question-card" role="listitem">
+        <div class="question-title" role="heading">
+          <span>Email Address</span>
+          <span class="required-star">*</span>
+        </div>
+        <input type="email" name="email" class="g-input" placeholder="Your email address" required>
+      </div>
+
+      <!-- 3. Phone Number -->
+      <div class="form-question-card" role="listitem">
+        <div class="question-title" role="heading">
+          <span>Phone Number</span>
+          <span class="required-star">*</span>
+        </div>
+        <input type="tel" name="phone" class="g-input" placeholder="Your phone number" required>
+      </div>
+
+      <!-- 4. Location -->
+      <div class="form-question-card" role="listitem">
+        <div class="question-title" role="heading">
+          <span>Current Location / City</span>
+        </div>
+        <input type="text" name="location" class="g-input" placeholder="e.g. San Francisco, CA or Remote">
+      </div>
+
+      <!-- 5. LinkedIn Profile URL -->
+      <div class="form-question-card" role="listitem">
+        <div class="question-title" role="heading">
+          <span>LinkedIn Profile URL</span>
+          <span class="required-star">*</span>
+        </div>
+        <input type="url" name="linkedin" class="g-input" placeholder="https://linkedin.com/in/..." required>
+      </div>
+
+      <!-- 6. GitHub Profile URL -->
+      <div class="form-question-card" role="listitem">
+        <div class="question-title" role="heading">
+          <span>GitHub Profile URL</span>
+        </div>
+        <input type="url" name="github" class="g-input" placeholder="https://github.com/...">
+      </div>
+
+      <!-- 7. Portfolio / Personal Website -->
+      <div class="form-question-card" role="listitem">
+        <div class="question-title" role="heading">
+          <span>Portfolio or Personal Website</span>
+        </div>
+        <input type="url" name="portfolio" class="g-input" placeholder="https://...">
+      </div>
+
+      <!-- 8. Work Authorization -->
+      <div class="form-question-card" role="listitem">
+        <div class="question-title" role="heading">
+          <span>Are you legally authorized to work in the US?</span>
+          <span class="required-star">*</span>
+        </div>
+        <input type="text" name="work_auth" class="g-input" placeholder="e.g. US Citizen / Permanent Resident" required>
+      </div>
+
+      <!-- 9. Why Join Us / Pitch -->
+      <div class="form-question-card" role="listitem">
+        <div class="question-title" role="heading">
+          <span>Why are you excited to join Athelas?</span>
+        </div>
+        <textarea name="why_join" class="g-textarea" placeholder="Your answer..."></textarea>
+      </div>
+
+      <!-- 10. Technical Background & Bio -->
+      <div class="form-question-card" role="listitem">
+        <div class="question-title" role="heading">
+          <span>Brief summary of your technical background and relevant experience</span>
+        </div>
+        <textarea name="experience_summary" class="g-textarea" placeholder="Your answer..."></textarea>
+      </div>
+
+      <!-- SUBMISSION -->
+      <div class="form-actions-card">
+        <button type="submit" class="btn-submit">Submit Application</button>
+        <button type="reset" class="btn-clear">Clear form</button>
+      </div>
+
+      <div id="submission-banner">
+        🎉 Application successfully received! Scoutr auto-fill logged to your Command Center.
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const banner = document.getElementById('submission-banner');
+      banner.style.display = 'block';
+      banner.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
