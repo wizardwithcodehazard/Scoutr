@@ -187,13 +187,36 @@ function updateProfileBadges() {
   }
 }
 
-// ==========================================================================
-// 2. DYNAMIC JOB FEED & RELEVANCE SCORING (WITH CACHING FOR API EFFICIENCY)
-// ==========================================================================
+function showSearchingState(query = '') {
+  if (!jobGrid) return;
+  const label = query ? `Scouting live portals for "${escapeHtml(query)}"...` : 'Scouting live startup feeds & ATS endpoints...';
+  jobGrid.innerHTML = `
+    <div class="search-loading-container" style="grid-column: 1 / -1;">
+      <div class="searching-pulse-radar">
+        <div class="radar-circle circle-1"></div>
+        <div class="radar-circle circle-2"></div>
+        <div class="radar-circle circle-3"></div>
+        <i data-lucide="sparkles" class="radar-icon"></i>
+      </div>
+      <p class="searching-title">${label}</p>
+      <p class="searching-sub">Querying Ashby, Greenhouse, Lever, Y Combinator, and Wellfound live pipelines</p>
+      <div class="skeleton-cards-wrap">
+        <div class="job-card-skeleton"></div>
+        <div class="job-card-skeleton"></div>
+        <div class="job-card-skeleton"></div>
+      </div>
+    </div>
+  `;
+  if (window.lucide && lucide.createIcons) lucide.createIcons();
+}
+
 async function loadJobsFeed(forceLiveScrape = false) {
   const currentProf = userProfiles[activeProfileIndex] || {};
   const query = currentProf.targetRoles || currentProf.name || '';
-  const skills = (currentProf.skills || '').split(/[,/\n]+/).map(s => s.trim()).filter(Boolean);
+
+  if (jobsData.length === 0) {
+    showSearchingState(query);
+  }
 
   try {
     const url = forceLiveScrape 
