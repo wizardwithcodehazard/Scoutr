@@ -211,6 +211,27 @@ body {
 .cloud-2 { width: 480px; height: 300px; top: 12%; right: -80px; }
 .cloud-3 { width: 600px; height: 220px; bottom: 25%; left: 25%; opacity: 0.35; }
 
+/* GPU-Accelerated Entrance Animations */
+@keyframes heroFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(72, 187, 120, 0);
+  }
+}
+
 .hero-content {
   position: relative;
   z-index: 1;
@@ -231,6 +252,7 @@ body {
   font-weight: 500;
   margin-bottom: 20px;
   backdrop-filter: blur(8px);
+  animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .pulse-dot-hero {
@@ -238,7 +260,7 @@ body {
   height: 7px;
   background: #48bb78;
   border-radius: 50%;
-  box-shadow: 0 0 8px #48bb78;
+  animation: pulseGlow 2s infinite;
 }
 
 .hero-heading {
@@ -248,6 +270,7 @@ body {
   line-height: 1.12;
   letter-spacing: -0.03em;
   margin-bottom: 18px;
+  animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
 }
 
 .hero-subheading {
@@ -257,6 +280,7 @@ body {
   font-weight: 400;
   max-width: 660px;
   margin: 0 auto 30px;
+  animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
 .hero-buttons {
@@ -264,6 +288,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 14px;
+  animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
 }
 
 .btn-hero-white {
@@ -304,6 +329,7 @@ body {
   width: 100%;
   max-width: 1060px;
   margin: 0 auto;
+  animation: heroFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
 }
 
 .hero-mockup-card {

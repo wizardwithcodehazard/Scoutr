@@ -14,7 +14,7 @@
 
 <br/>
 
-> **Scrapes the long tail of startup engineering roles across Ashby, Greenhouse, Lever, and Y Combinator, heals broken selector ASTs in $<1.5\text{s}$ with zero downtime, and executes 1-click in-browser application autofill.**
+> **Scrapes the long tail of startup engineering roles across modern career portals, heals broken selector ASTs in $<1.5\text{s}$ with zero downtime, and executes 1-click in-browser application autofill.**
 
 </div>
 
