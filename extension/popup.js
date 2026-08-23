@@ -46,33 +46,15 @@ const stagedMatchBadge = document.getElementById('staged-match-badge');
 // --- STATE ---
 let allProfiles = [];
 let currentApiKey = '';
-const PRIMARY_GEMINI_MODEL = 'gemini-3.5-flash-lite';
-const FALLBACK_GEMINI_MODEL = 'gemini-2.0-flash';
+const GEMINI_MODEL = 'gemini-3.5-flash-lite';
 
-// Resilient Gemini API Dispatcher (Prioritizes gemini-3.5-flash-lite)
+// Direct Gemini 3.5 Flash Lite API Dispatcher
 async function callGeminiApi(payload, apiKey) {
-  try {
-    let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${PRIMARY_GEMINI_MODEL}:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (res.ok) return res;
-
-    console.warn(`[Scoutr Gemini API] ${PRIMARY_GEMINI_MODEL} returned ${res.status}, cascading to ${FALLBACK_GEMINI_MODEL}`);
-    return await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${FALLBACK_GEMINI_MODEL}:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-  } catch (err) {
-    return await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${FALLBACK_GEMINI_MODEL}:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-  }
+  return await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
 }
 
 // --- INITIALIZATION ---
@@ -376,10 +358,40 @@ if (imageUpload) {
         return;
       }
 
-      if (fileStatus) fileStatus.textContent = 'Extracting resume structure via Gemini 2.0 OCR...';
+      if (fileStatus) fileStatus.textContent = 'Extracting resume details via Gemini 3.5 Flash Lite...';
 
       try {
-        const ocrPrompt = `Extract candidate details from this resume image. Output as clean text formatted with Name, Email, Phone, Location, Skills, and Bio.`;
+        const ocrPrompt = `You are an expert technical recruiter and resume parser.
+Extract ALL information from this resume image in full rich detail:
+
+1. Personal Information & Links:
+- Name: Full Name
+- Email: Email address
+- Phone: Phone number
+- Location: City, Country
+- LinkedIn: URL
+- GitHub: URL
+- Portfolio/Website: URL
+
+2. Professional Summary & Bio:
+- High-level pitch of candidate's technical profile, focus areas, and strengths.
+
+3. Detailed Technical Skills:
+- Categorized (AI & LLMs, Backend, Frontend, Languages, Cloud & DevOps, Databases, Tools & Frameworks).
+
+4. Key Projects (Extract all projects with tech stack and accomplishments):
+- For each project: Project Title, Technologies used, and bullet points describing architecture, implementation, and impact.
+
+5. Work Experience & Internships:
+- Company, Role Title, Duration, and specific technical contributions.
+
+6. Education & Academic Background:
+- Degree, Major, Institution, Graduation Year.
+
+7. Achievements & Hackathons:
+- Hackathon wins, rankings, awards, and certifications.
+
+Output the entire extracted profile cleanly formatted in readable plain text.`;
         const mime = file.type || 'image/png';
         const res = await callGeminiApi({
           contents: [{
@@ -395,7 +407,7 @@ if (imageUpload) {
           const extractedText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
           if (profileText) profileText.value = extractedText;
           if (fileStatus) {
-            fileStatus.textContent = 'OCR Extraction Complete!';
+            fileStatus.textContent = 'OCR Extraction Complete (Projects, Experience & Bio Captured)!';
             fileStatus.style.color = '#10b981';
           }
         } else {
