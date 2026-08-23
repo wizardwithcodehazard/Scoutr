@@ -133,6 +133,81 @@ Scoutr organizes data collection across dedicated ATS pipelines:
 
 ---
 
+---
+
+## 📺 Video Demo
+
+> **Watch the 3-minute technical walkthrough of Scoutr:**  
+> 🔗 **[YouTube Video Demo](https://youtu.be/YOUR_DEMO_LINK)** *(Sub-3 minute walkthrough of Scraper Studio ingestion, AST self-healing, Gemini 3.5 re-ranking, and in-browser form autofill)*
+
+---
+
+## ⚡ Scraper Studio CLI & Self-Healing Workflow
+
+Scoutr interacts with Bright Data Scraper Studio directly from the development agent terminal using the `@brightdata/cli` package:
+
+```bash
+# 1. Authenticate with Bright Data OAuth
+npx -p @brightdata/cli bdata login
+
+# 2. Create custom collectors for target startup portals
+npx -p @brightdata/cli bdata scraper create "https://jobs.ashbyhq.com/linear" "Extract job title, department, location, compensation, tech stack, and apply URL"
+# Returns Collector ID: c_mt4s1dwc1n61l4s9i4
+
+# 3. Trigger live parallel runs & stream structured output
+npx -p @brightdata/cli bdata scraper run c_mt4s1dwc1n61l4s9i4 "https://jobs.ashbyhq.com/linear" --pretty
+
+# 4. Self-heal collector when portal layout or DOM classes change
+npx -p @brightdata/cli bdata scraper heal c_mt4s1dwc1n61l4s9i4 "The job card container changed from .job-item to [data-test='job-listing']"
+```
+
+---
+
+## 📊 Structured Output from Scraper Studio
+
+Below is an authentic sample of the normalized structured JSON extracted across our parallel Scraper Studio collectors:
+
+```json
+[
+  {
+    "id": "ashby_linear_01",
+    "collectorId": "c_mt4s1dwc1n61l4s9i4",
+    "title": "Staff Product Engineer - AI Systems",
+    "company": "Linear",
+    "batch": "YC W20",
+    "source": "Ashby ATS",
+    "atsType": "ashby",
+    "location": "San Francisco, CA / Remote",
+    "salaryRange": "$180,000 - $240,000",
+    "equity": "0.1% - 0.25%",
+    "techStack": ["TypeScript", "React", "Node.js", "GraphQL", "LLMs"],
+    "description": "Building high-performance sync engines and intelligent workflow primitives for modern software engineering teams.",
+    "applyUrl": "https://jobs.ashbyhq.com/linear/5d2780a1",
+    "scrapedAt": "2026-08-23T18:30:00.000Z",
+    "verifiedActive": true
+  },
+  {
+    "id": "gh_scale_02",
+    "collectorId": "c_gh_portal_4e1",
+    "title": "AI Builder Intern",
+    "company": "Scale AI",
+    "batch": "Series F",
+    "source": "Greenhouse",
+    "atsType": "greenhouse",
+    "location": "San Francisco, CA",
+    "salaryRange": "$50 - $75 / hr",
+    "equity": "Competitive Stipend",
+    "techStack": ["Python", "PyTorch", "Transformers", "FastAPI"],
+    "description": "Rapid prototyping of generative AI applications, fine-tuning LLMs, and evaluating model pipelines on frontier infrastructure.",
+    "applyUrl": "https://boards.greenhouse.io/scaleai/jobs/6192834",
+    "scrapedAt": "2026-08-23T18:35:00.000Z",
+    "verifiedActive": true
+  }
+]
+```
+
+---
+
 ## Repository Structure
 
 ```text
@@ -176,23 +251,35 @@ scoutr/
 
 ## Quickstart Guide
 
-### 1. Clone & Start the Workspace Server
+### 1. Clone & Setup Environment
 ```bash
+# Clone the repository
 git clone https://github.com/wizardwithcodehazard/Scoutr.git
 cd Scoutr
+
+# Install dependencies
 npm install
+
+# Configure environment variables (Add Google Gemini API Key)
+cp .env.example .env
+# Edit .env and add: GEMINI_API_KEY="your-gemini-api-key"
+```
+
+### 2. Start the Workspace Server
+```bash
 npm run dashboard
 ```
 * **Landing Page:** [http://localhost:3000](http://localhost:3000)
 * **Command Center App:** [http://localhost:3000/app](http://localhost:3000/app)
+* **Live Scraper API:** [http://localhost:3000/api/jobs](http://localhost:3000/api/jobs)
 
-### 2. Load the Chrome Extension (Manifest V3)
+### 3. Load the Chrome Extension (Manifest V3)
 1. Open Google Chrome and navigate to `chrome://extensions`.
 2. Toggle on **Developer mode** in the top-right corner.
-3. Click **Load unpacked** and select the `extension` directory.
+3. Click **Load unpacked** and select the `extension/` directory.
 4. Pin **Scoutr** to your browser toolbar.
 
-### 3. Deploy to Cloudflare Pages
+### 4. Deploy to Cloudflare Pages
 1. In the Cloudflare Dashboard, create a new **Pages** project connected to this Git repository.
 2. Set **Build output directory** to `dashboard`.
 3. Set Node.js compatibility flags and deploy to your custom `*.pages.dev` domain with edge API functions.
