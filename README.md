@@ -19,34 +19,34 @@
 
 ## Architecture Overview
 
-Scoutr operates across three decoupled modules: **Bright Data Scraper Studio Ingestion Layer**, **Command Center & Multi-Resume Engine**, and **In-Browser Chrome Autofill Companion**.
+Scoutr operates across three decoupled layers: **Bright Data Ingestion & Self-Healing Pipeline**, **Command Center & Match Scoring Engine**, and **In-Browser Chrome Autofill Companion**.
 
 ```mermaid
 flowchart TD
-    subgraph S1["Tier 1: Bright Data Scraper Studio & Web Unlocker"]
+    subgraph T1["Tier 1: Bright Data Scraper Studio & Web Unlocker"]
         direction TB
-        A["Startup Ecosystems<br/>(Ashby · Greenhouse · Lever · YC)"] -->|bdata scraper run| B["Scraper Studio Collectors<br/>(c_mt4s1dwc1n61l4s9i4 / c_ashby_portal_8f2)"]
-        B -->|DOM Layout Mutation Detected| C["AST Self-Healing Sentinel<br/>bdata scraper heal"]
-        C -->|Selector Rewritten in 1.4s| B
-        B -->|Parallel Stream| D["Pre-Flight Link Sentinel<br/>(HTTP HEAD/GET 404 Pruner)"]
-        D -->|Verified Active Jobs| E["Ingestion Server & API<br/>(dashboard/server.js)"]
+        A["Startup Ecosystems<br/>(Ashby · Greenhouse · Lever · YC)"] -->|bdata scraper run| B["Scraper Studio Collectors<br/>(Multi-ATS Stream Engine)"]
+        B -->|DOM Layout Shift| C["AST Self-Healing Sentinel<br/>(bdata scraper heal)"]
+        C -->|Selector Restored in 1.4s| B
+        B -->|Stream Ingestion| D["Pre-Flight Link Sentinel<br/>(HTTP 404 Pruner)"]
+        D -->|Verified Active Jobs| E["Ingestion Server & API<br/>(server.js)"]
     end
 
-    subgraph S2["Tier 2: Scoutr Command Center"]
+    subgraph T2["Tier 2: Scoutr Command Center"]
         direction TB
-        E -->|0ms Local Cache| F["Linear-Grade Split Explorer<br/>(http://localhost:3000/app)"]
-        F --> G["Multi-Profile State Manager<br/>(Role Matching & Skill Scoring)"]
-        F --> H["Interactive Pipeline Tracker<br/>(Applied · Interviewing · Offers)"]
-        F --> I["Scraper Studio Telemetry Modal<br/>(Live AST Sentinel Diagnostics)"]
+        E -->|0ms Cache Load| F["Linear-Grade Split Explorer<br/>(localhost:3000/app)"]
+        F --> G["Multi-Profile Match Engine<br/>(Skill & Relevance Scoring)"]
+        F --> H["Pipeline Tracker<br/>(Applied · Interviewing · Offers)"]
+        F --> I["Scraper Telemetry Modal<br/>(AST Diagnostic Hub)"]
     end
 
-    subgraph S3["Tier 3: Chrome Extension Autofill Engine"]
+    subgraph T3["Tier 3: Chrome Extension Autofill Engine"]
         direction TB
-        F -->|Handoff: 'Apply with Scoutr'| J["Live ATS Application Page<br/>(Linear, Cursor, Anthropic, etc.)"]
-        J --> K["In-Browser DOM Scanner<br/>(scrapePageForForms)"]
-        K --> L["Gemini 2.0 Semantic Mapper<br/>(Personalized Field Correlation)"]
+        F -->|Handoff: 'Apply with Scoutr'| J["Target ATS Portal<br/>(Linear, Cursor, Anthropic, etc.)"]
+        J --> K["DOM Input Scanner<br/>(scrapePageForForms)"]
+        K --> L["Gemini 2.0 Semantic Mapper<br/>(Field Correlation Engine)"]
         L --> M["Synthetic Event Dispatcher<br/>(Input · Change · Blur)"]
-        M -->|Auto-Log Submission| H
+        M -->|Auto-Log Application| H
     end
 ```
 
@@ -55,7 +55,7 @@ flowchart TD
 ## Core Capabilities
 
 ### 1. Multi-ATS Live Scraping & Pre-Flight Health Sentinel
-* **Direct Public ATS Ingestion:** Parallel collectors directly stream real-time engineering positions from **Ashby ATS** (Linear, Cursor, ElevenLabs, Decagon, Sierra AI, Modal), **Greenhouse** (Anthropic, Figma, Scale AI, Discord), **Lever** (Palantir), and **Y Combinator** (Work at a Startup & HN Founder feeds).
+* **Direct ATS Ingestion:** Parallel collectors stream real-time engineering positions from **Ashby ATS** (Linear, Cursor, ElevenLabs, Decagon, Sierra AI, Modal), **Greenhouse** (Anthropic, Figma, Scale AI, Discord), **Lever** (Palantir), and **Y Combinator** (Work at a Startup & HN Founder feeds).
 * **Automated 404 Sentinel:** Validates outgoing URLs through pre-flight HTTP verification, discarding expired or defunct job boards before rendering.
 * **Cost-Efficient 2-Tier Caching:** Page loads execute instantly ($0\text{ ms}$) from local cache without redundant API calls. Live web scraping triggers on demand via **Sync Pipeline**.
 
@@ -89,16 +89,16 @@ flowchart TD
 
 ---
 
-## Pinned Scraper Studio Collectors
+## Scraper Studio Multi-Source Architecture
 
-Scoutr utilizes dedicated Scraper Studio Collector configurations mapped in [`pipeline/scraper_config.json`](file:///c:/Users/Sahil/Desktop/scrapeverse/clairis/pipeline/scraper_config.json):
+Scoutr organizes data collection across dedicated ATS pipelines:
 
-| Collector ID | Target Ecosystem | Primary Extraction Scope |
+| Pipeline Collector | Target Ecosystem | Primary Extraction Scope |
 | :--- | :--- | :--- |
-| `c_mt4s1dwc1n61l4s9i4` | Y Combinator Startups | Company, batch, title, equity, tech stack, apply URL |
-| `c_ashby_portal_8f2` | Ashby ATS Boards | Role title, department, location, compensation, job ID |
-| `c_gh_portal_4e1` | Greenhouse Portals | Position title, office location, requisition ID, direct URL |
-| `c_wf_talent_41e9` | Wellfound / Tech Feeds | Startup stage, funding round, remote availability, salary |
+| **YC Startup Collector** | Y Combinator Startups | Company, batch, title, equity, tech stack, apply URL |
+| **Ashby ATS Collector** | Ashby ATS Boards | Role title, department, location, compensation, job ID |
+| **Greenhouse Collector** | Greenhouse Portals | Position title, office location, requisition ID, direct URL |
+| **Wellfound Collector** | Wellfound / Tech Feeds | Startup stage, funding round, remote availability, salary |
 
 ---
 
@@ -108,13 +108,14 @@ Scoutr utilizes dedicated Scraper Studio Collector configurations mapped in [`pi
 clairis/
 ├── package.json               # Project configuration, scripts, and dependencies
 ├── .env.example               # Environment variable template (Gemini API key)
+├── .gitignore                 # Standard Node.js & IDE ignore rules
 ├── LICENSE                    # MIT License
 ├── README.md                  # Complete technical architecture documentation
 │
 ├── pipeline/                  # [Module A: Bright Data Scraper Studio]
 │   ├── collector.js           # Live Bright Data DCA trigger & stream normalizer
 │   ├── heal_monitor.js        # Self-healing test runner & DOM diff recovery
-│   └── scraper_config.json    # Pinned Collector IDs and schema definitions
+│   └── scraper_config.json    # Collector schemas and target selectors
 │
 ├── dashboard/                 # [Module B: Landing Page & Command Center]
 │   ├── index.html             # Product landing page & macOS card preview
@@ -142,8 +143,8 @@ clairis/
 
 ### 1. Clone & Start the Workspace Server
 ```bash
-git clone https://github.com/sahil/scoutr.git
-cd scoutr/clairis
+git clone https://github.com/wizardwithcodehazard/Scoutr.git
+cd Scoutr
 npm run dashboard
 ```
 * **Landing Page:** [http://localhost:3000](http://localhost:3000)
@@ -152,7 +153,7 @@ npm run dashboard
 ### 2. Load the Chrome Extension (Manifest V3)
 1. Open Google Chrome and navigate to `chrome://extensions`.
 2. Toggle on **Developer mode** in the top-right corner.
-3. Click **Load unpacked** and select the `clairis/extension` directory.
+3. Click **Load unpacked** and select the `extension` directory.
 4. Pin **Scoutr** to your browser toolbar.
 
 ### 3. Run Self-Healing Scraper Test Suite
