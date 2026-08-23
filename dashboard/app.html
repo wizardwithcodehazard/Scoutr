@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,19 +13,23 @@
   <!-- Google Fonts: Inter & Fragment Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="dashboard.css">
 </head>
+
 <body class="app-mode-body">
 
   <!-- APP VIEW CONTAINER -->
   <div class="app-standalone-container">
-    
+
     <!-- TOP APP BAR -->
     <header class="app-top-header">
       <div class="brand-group">
         <a href="index.html" class="app-brand-link">
-          <img src="app_icon.png" alt="Scoutr Logo" style="width: 18px; height: 18px; border-radius: 4px; vertical-align: middle; margin-right: 6px;">
+          <img src="app_icon.png" alt="Scoutr Logo"
+            style="width: 18px; height: 18px; border-radius: 4px; vertical-align: middle; margin-right: 6px;">
           <span class="brand-title">scoutr</span>
         </a>
         <button class="telemetry-pill-light" id="open-telemetry-btn" title="Click to inspect Scraper Studio Sentinel">
@@ -35,8 +40,9 @@
       </div>
 
       <div class="app-nav-actions">
-        <a href="index.html" class="btn-app-secondary"><i data-lucide="arrow-left" class="w-icon"></i><span>Overview</span></a>
-        
+        <a href="index.html" class="btn-app-secondary"><i data-lucide="arrow-left"
+            class="w-icon"></i><span>Overview</span></a>
+
         <button class="btn-app-secondary" id="open-ext-guide-btn">
           <i data-lucide="puzzle" class="w-icon"></i>
           <span>Extension Setup</span>
@@ -92,14 +98,15 @@
 
       <!-- WINDOW BODY PANES -->
       <div class="window-body">
-        
+
         <!-- VIEW 1: LIVE DISCOVERY STREAM (SPLIT-VIEW EXPLORER) -->
         <section id="jobs-view" class="view-pane active">
           <!-- FEED HEADER -->
           <div class="feed-header-row">
             <div>
               <h2 class="section-title">Startup Roles & ATS Direct Stream</h2>
-              <p class="section-desc">Live matched against your active career profile with 1-click ATS application handoff</p>
+              <p class="section-desc">Live matched against your active career profile with 1-click ATS application
+                handoff</p>
             </div>
             <div class="active-profile-tag-pill" id="active-profile-feed-indicator" title="Click to customize profile">
               <span>Matching: <strong id="feed-profile-name">Founding AI Engineer</strong></span>
@@ -110,7 +117,8 @@
           <div class="filter-toolbar">
             <div class="search-input-wrap">
               <i data-lucide="search" class="search-ico"></i>
-              <input type="text" id="job-search-input" placeholder="Search by role title, startup name, stack (e.g. Python, React), or location...">
+              <input type="text" id="job-search-input"
+                placeholder="Search by role title, startup name, stack (e.g. Python, React), or location...">
             </div>
 
             <div class="filter-pills-row">
@@ -191,8 +199,9 @@
                     <span>Apply with Scoutr</span>
                     <i data-lucide="arrow-up-right" class="w-icon"></i>
                   </button>
-                  
-                  <button class="btn-secondary-action" id="detail-btn-copy-pitch" title="Copy 2-sentence tailored intro pitch">
+
+                  <button class="btn-secondary-action" id="detail-btn-copy-pitch"
+                    title="Copy 2-sentence tailored intro pitch">
                     <i data-lucide="copy" class="w-icon"></i>
                     <span>Copy Pitch</span>
                   </button>
@@ -215,11 +224,12 @@
           <div class="feed-header-row">
             <div>
               <h2 class="section-title">Career Profiles & Resumes</h2>
-              <p class="section-desc">Manage targeted profiles for different roles. Synced 100% locally with your Chrome Extension.</p>
+              <p class="section-desc">Manage targeted profiles for different roles. Synced 100% locally with your Chrome
+                Extension.</p>
             </div>
             <button class="btn-light" id="create-new-profile-btn">
               <i data-lucide="plus" class="w-icon"></i>
-              <span>+ New Profile</span>
+              <span>New Profile</span>
             </button>
           </div>
 
@@ -236,10 +246,12 @@
                 <i data-lucide="file-text" class="w-icon"></i>
                 <strong>Quick Resume Ingestion</strong>
               </div>
-              <p class="section-desc" style="margin-bottom: 12px;">Paste your resume text or bio to auto-extract structured ATS fields in 1 click.</p>
-              
-              <textarea id="resume-raw-text" class="raw-resume-area" placeholder="Paste full resume text, projects, or work history here..."></textarea>
-              
+              <p class="section-desc" style="margin-bottom: 12px;">Paste your resume text or bio to auto-extract
+                structured ATS fields in 1 click.</p>
+
+              <textarea id="resume-raw-text" class="raw-resume-area"
+                placeholder="Paste full resume text, projects, or work history here..."></textarea>
+
               <button class="btn-extract-resume" id="btn-parse-resume-text">
                 <i data-lucide="sparkles" class="w-icon"></i>
                 <span>Auto-Extract Profile Fields</span>
@@ -252,7 +264,8 @@
                 <div class="form-row-2">
                   <div class="form-group">
                     <label class="form-label">Profile Label / Preset Name</label>
-                    <input type="text" id="prof-label" class="form-input" required placeholder="e.g. Founding AI Engineer">
+                    <input type="text" id="prof-label" class="form-input" required
+                      placeholder="e.g. Founding AI Engineer">
                   </div>
                   <div class="form-group">
                     <label class="form-label">Full Name</label>
@@ -274,7 +287,8 @@
                 <div class="form-row-2">
                   <div class="form-group">
                     <label class="form-label">Location (City, Country)</label>
-                    <input type="text" id="prof-location" class="form-input" placeholder="e.g. San Francisco, CA / Remote">
+                    <input type="text" id="prof-location" class="form-input"
+                      placeholder="e.g. San Francisco, CA / Remote">
                   </div>
                   <div class="form-group">
                     <label class="form-label">Work Authorization</label>
@@ -290,7 +304,8 @@
                 <div class="form-row-2">
                   <div class="form-group">
                     <label class="form-label">LinkedIn Profile</label>
-                    <input type="url" id="prof-linkedin" class="form-input" placeholder="https://linkedin.com/in/username">
+                    <input type="url" id="prof-linkedin" class="form-input"
+                      placeholder="https://linkedin.com/in/username">
                   </div>
                   <div class="form-group">
                     <label class="form-label">GitHub Profile</label>
@@ -311,17 +326,20 @@
 
                 <div class="form-group">
                   <label class="form-label">Target Role Titles (Comma-separated)</label>
-                  <input type="text" id="prof-target-roles" class="form-input" placeholder="e.g. Founding AI Engineer, Staff ML Engineer, Full Stack Architect">
+                  <input type="text" id="prof-target-roles" class="form-input"
+                    placeholder="e.g. Founding AI Engineer, Staff ML Engineer, Full Stack Architect">
                 </div>
 
                 <div class="form-group">
                   <label class="form-label">Core Technical Skills (Comma-separated)</label>
-                  <input type="text" id="prof-skills" class="form-input" placeholder="e.g. Python, PyTorch, React, Next.js, PostgreSQL, Docker, FastAPI, Go">
+                  <input type="text" id="prof-skills" class="form-input"
+                    placeholder="e.g. Python, PyTorch, React, Next.js, PostgreSQL, Docker, FastAPI, Go">
                 </div>
 
                 <div class="form-group">
                   <label class="form-label">Candidate Elevator Pitch / Narrative</label>
-                  <textarea id="prof-narrative" class="form-input form-textarea" rows="3" placeholder="Brief 2-3 sentence overview of your background, high-impact achievements, and engineering philosophy..."></textarea>
+                  <textarea id="prof-narrative" class="form-input form-textarea" rows="3"
+                    placeholder="Brief 2-3 sentence overview of your background, high-impact achievements, and engineering philosophy..."></textarea>
                 </div>
 
                 <div class="profile-actions-bar">
@@ -342,7 +360,7 @@
             </div>
             <button class="btn-light" id="open-add-app-modal-btn">
               <i data-lucide="plus" class="w-icon"></i>
-              <span>+ Log Application</span>
+              <span>Log Application</span>
             </button>
           </div>
 
@@ -457,8 +475,10 @@
             <span class="terminal-tag mono">bdata scraper heal</span>
           </div>
           <div class="terminal-screen" id="telemetry-terminal">
-            <div class="term-line"><span class="term-time">[03:10:04]</span> <span class="term-info">INITIALIZED:</span> Scraper Studio residential unblocker mesh active.</div>
-            <div class="term-line"><span class="term-time">[03:10:05]</span> <span class="term-success">LIVE:</span> Connected to collectors c_ashby_portal_8f2, c_gh_portal_4e1.</div>
+            <div class="term-line"><span class="term-time">[03:10:04]</span> <span class="term-info">INITIALIZED:</span>
+              Scraper Studio residential unblocker mesh active.</div>
+            <div class="term-line"><span class="term-time">[03:10:05]</span> <span class="term-success">LIVE:</span>
+              Connected to collectors c_ashby_portal_8f2, c_gh_portal_4e1.</div>
           </div>
         </div>
       </div>
@@ -477,7 +497,8 @@
           <div class="step-num-badge">1</div>
           <div>
             <strong>Open Chrome Extensions</strong>
-            <p>Navigate to <code>chrome://extensions</code> in your browser and toggle on <strong>Developer mode</strong>.</p>
+            <p>Navigate to <code>chrome://extensions</code> in your browser and toggle on <strong>Developer
+                mode</strong>.</p>
           </div>
         </div>
         <div class="ext-step-card">
@@ -510,7 +531,8 @@
       </div>
       <div class="modal-body">
         <span class="onboard-step-pill">1-Time Quick Onboarding</span>
-        <p class="section-desc">Create your primary career identity. Scoutr will customize live job discovery and sync with your in-browser auto-filler.</p>
+        <p class="section-desc">Create your primary career identity. Scoutr will customize live job discovery and sync
+          with your in-browser auto-filler.</p>
 
         <form id="onboard-form">
           <div class="form-row-2">
@@ -526,12 +548,14 @@
 
           <div class="form-group">
             <label class="form-label">Target Role (e.g. Founding AI Engineer)</label>
-            <input type="text" id="onboard-target" class="form-input" required placeholder="e.g. Founding AI Engineer, Staff ML">
+            <input type="text" id="onboard-target" class="form-input" required
+              placeholder="e.g. Founding AI Engineer, Staff ML">
           </div>
 
           <div class="form-group">
             <label class="form-label">Core Technical Stack</label>
-            <input type="text" id="onboard-skills" class="form-input" required placeholder="e.g. Python, PyTorch, React, TypeScript, PostgreSQL">
+            <input type="text" id="onboard-skills" class="form-input" required
+              placeholder="e.g. Python, PyTorch, React, TypeScript, PostgreSQL">
           </div>
 
           <div class="form-row-2">
@@ -600,4 +624,5 @@
   <script src="jobs_feed.js"></script>
   <script src="dashboard.js"></script>
 </body>
+
 </html>

@@ -45,7 +45,7 @@ const resumeRawText = document.getElementById('resume-raw-text');
 const btnParseResume = document.getElementById('btn-parse-resume-text');
 const btnClearHistory = document.getElementById('clear-history-btn');
 const btnDeleteProfile = document.getElementById('btn-delete-profile');
-const btnCreateNewProfile = document.getElementById('btn-create-new-profile');
+const btnCreateNewProfile = document.getElementById('create-new-profile-btn') || document.getElementById('btn-create-new-profile');
 
 // Onboarding Modal DOM Elements
 const onboardingModal = document.getElementById('onboarding-modal');
@@ -905,32 +905,72 @@ function setupEventListeners() {
     });
   }
 
-  // Create New Profile Button
-  if (btnCreateNewProfile) {
-    btnCreateNewProfile.addEventListener('click', () => {
-      const newPreset = {
-        name: `Target Profile ${userProfiles.length + 1}`,
-        fullname: userProfiles[0]?.fullname || '',
-        email: userProfiles[0]?.email || '',
-        phone: userProfiles[0]?.phone || '',
-        location: userProfiles[0]?.location || '',
-        workAuth: userProfiles[0]?.workAuth || 'Authorized to work in US/Remote',
-        linkedin: userProfiles[0]?.linkedin || '',
-        github: userProfiles[0]?.github || '',
-        portfolio: userProfiles[0]?.portfolio || '',
-        twitter: userProfiles[0]?.twitter || '',
-        targetRoles: '',
-        skills: '',
-        narrative: ''
-      };
+  // Create New Profile Logic
+  function createNewProfilePreset() {
+    const baseProf = userProfiles[0] || {};
+    const newPreset = {
+      name: `Target Profile ${userProfiles.length + 1}`,
+      fullname: baseProf.fullname || '',
+      email: baseProf.email || '',
+      phone: baseProf.phone || '',
+      location: baseProf.location || '',
+      workAuth: baseProf.workAuth || 'US Citizen / Permanent Resident',
+      linkedin: baseProf.linkedin || '',
+      github: baseProf.github || '',
+      portfolio: baseProf.portfolio || '',
+      twitter: baseProf.twitter || '',
+      targetRoles: '',
+      skills: '',
+      narrative: ''
+    };
 
-      userProfiles.push(newPreset);
-      activeProfileIndex = userProfiles.length - 1;
-      saveProfilesToStorage(userProfiles);
-      renderProfilePills();
-      populateProfileForm();
-      updateProfileBadges();
-      showToast('Created new profile preset!');
+    userProfiles.push(newPreset);
+    activeProfileIndex = userProfiles.length - 1;
+    saveProfilesToStorage(userProfiles);
+    renderProfilePills();
+    populateProfileForm();
+    updateProfileBadges();
+    renderJobs();
+
+    // Ensure Profile tab is active
+    const profileTab = document.querySelector('[data-tab="profile-view"]');
+    if (profileTab) profileTab.click();
+
+    if (profLabelInput) {
+      profLabelInput.focus();
+      profLabelInput.select();
+    }
+    showToast(`Created "${newPreset.name}"! Customize target roles & skills.`);
+  }
+
+  window.createNewProfile = createNewProfilePreset;
+
+  const createButtons = [
+    document.getElementById('create-new-profile-btn'),
+    document.getElementById('btn-create-new-profile')
+  ].filter(Boolean);
+
+  createButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      createNewProfilePreset();
+    });
+  });
+
+  // Top Navbar profile click shortcuts
+  const userSwitcherBtn = document.getElementById('user-switcher-btn');
+  if (userSwitcherBtn) {
+    userSwitcherBtn.addEventListener('click', () => {
+      const profileTab = document.querySelector('[data-tab="profile-view"]');
+      if (profileTab) profileTab.click();
+    });
+  }
+
+  const feedProfileIndicator = document.getElementById('active-profile-feed-indicator');
+  if (feedProfileIndicator) {
+    feedProfileIndicator.addEventListener('click', () => {
+      const profileTab = document.querySelector('[data-tab="profile-view"]');
+      if (profileTab) profileTab.click();
     });
   }
 
@@ -997,18 +1037,6 @@ function setupEventListeners() {
     });
   });
 
-  // User Switcher & Header Actions
-  const userSwitcherBtn = document.getElementById('user-switcher-btn');
-  if (userSwitcherBtn) {
-    userSwitcherBtn.addEventListener('click', () => {
-      tabButtons.forEach(b => b.classList.remove('active'));
-      viewPanes.forEach(p => p.classList.remove('active'));
-      const profileTabBtn = document.querySelector('[data-tab="profile-view"]');
-      if (profileTabBtn) profileTabBtn.classList.add('active');
-      const profileView = document.getElementById('profile-view');
-      if (profileView) profileView.classList.add('active');
-    });
-  }
 
   // Trigger Pipeline Sync Button (On-Demand Live API Scraping)
   const triggerPipelineBtn = document.getElementById('trigger-pipeline-btn');
