@@ -352,6 +352,7 @@ if (imageUpload) {
 
       try {
         const ocrPrompt = `Extract candidate details from this resume image. Output as clean text formatted with Name, Email, Phone, Location, Skills, and Bio.`;
+        const mime = file.type || 'image/png';
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${currentApiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -359,7 +360,7 @@ if (imageUpload) {
             contents: [{
               parts: [
                 { text: ocrPrompt },
-                { inline_data: { mime_type: file.type || 'image/png', data: base64Data } }
+                { inlineData: { mimeType: mime, data: base64Data } }
               ]
             }]
           })
@@ -369,12 +370,23 @@ if (imageUpload) {
           const data = await res.json();
           const extractedText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
           if (profileText) profileText.value = extractedText;
-          if (fileStatus) fileStatus.textContent = 'OCR Extraction Complete!';
+          if (fileStatus) {
+            fileStatus.textContent = 'OCR Extraction Complete!';
+            fileStatus.style.color = '#10b981';
+          }
         } else {
-          if (fileStatus) fileStatus.textContent = 'OCR request failed. Check API key.';
+          const errBody = await res.json().catch(() => ({}));
+          const msg = errBody.error?.message || res.statusText || 'Check API key';
+          if (fileStatus) {
+            fileStatus.textContent = `OCR error: ${msg}`;
+            fileStatus.style.color = '#ef4444';
+          }
         }
       } catch (err) {
-        if (fileStatus) fileStatus.textContent = 'OCR network error.';
+        if (fileStatus) {
+          fileStatus.textContent = `OCR error: ${err.message}`;
+          fileStatus.style.color = '#ef4444';
+        }
       }
     };
     reader.readAsDataURL(file);
