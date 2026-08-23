@@ -43,14 +43,25 @@ const profSkillsInput = document.getElementById('prof-skills');
 const profNarrativeInput = document.getElementById('prof-narrative');
 const resumeRawText = document.getElementById('resume-raw-text');
 const btnParseResume = document.getElementById('btn-parse-resume-text');
-const btnDeleteProfile = document.getElementById('btn-delete-profile');
-const btnCreateNewProfile = document.getElementById('create-new-profile-btn');
+const btnClearHistory = document.getElementById('clear-history-btn');
+const btnCreateNewProfile = document.getElementById('btn-create-new-profile');
+
+// Onboarding Modal DOM Elements
+const onboardingModal = document.getElementById('onboarding-modal');
+const closeOnboardingBtn = document.getElementById('close-onboarding-btn');
+const skipOnboardingBtn = document.getElementById('skip-onboarding-btn');
+const onboardForm = document.getElementById('onboard-form');
+
+function openOnboardingModal() {
+  if (onboardingModal) onboardingModal.classList.add('active');
+}
+function closeOnboardingModal() {
+  if (onboardingModal) onboardingModal.classList.remove('active');
+}
 
 // Modals
 const appModal = document.getElementById('app-modal');
 const appForm = document.getElementById('app-form');
-const onboardingModal = document.getElementById('onboarding-modal');
-const onboardForm = document.getElementById('onboard-form');
 const extGuideModal = document.getElementById('ext-guide-modal');
 const toastEl = document.getElementById('toast');
 
@@ -384,11 +395,11 @@ function renderJobs() {
     `;
   }).join('');
 
-  // Auto-select first job if none selected
+  // Auto-select first job if none selected (silently, without forcing mobile-detail-open)
   if (filtered.length > 0) {
     const targetJob = filtered.find(j => j.id === selectedJobId) || filtered[0];
     selectedJobId = targetJob.id;
-    renderJobDetail(targetJob);
+    renderJobDetail(targetJob, false);
   }
 
   if (window.lucide && lucide.createIcons) lucide.createIcons();
@@ -396,7 +407,7 @@ function renderJobs() {
 
 let selectedJobId = null;
 
-window.selectJob = function (jobId) {
+window.selectJob = function (jobId, isExplicitTap = true) {
   selectedJobId = jobId;
 
   document.querySelectorAll('.job-card').forEach(card => {
@@ -409,11 +420,11 @@ window.selectJob = function (jobId) {
 
   const job = jobsData.find(j => j.id === jobId);
   if (job) {
-    renderJobDetail(job);
+    renderJobDetail(job, isExplicitTap);
   }
 };
 
-function renderJobDetail(job) {
+function renderJobDetail(job, isExplicitTap = false) {
   const drawerPlaceholder = document.getElementById('detail-placeholder');
   const drawerCard = document.getElementById('detail-card');
   if (!drawerCard) return;
@@ -507,13 +518,15 @@ function renderJobDetail(job) {
     };
   }
 
-  // Mobile UX: activate mobile-detail-open class & scroll smoothly
+  // Mobile UX: ONLY activate mobile-detail-open class if user explicitly tapped a card!
   const explorerLayout = document.querySelector('.split-explorer-layout');
   if (explorerLayout && window.innerWidth <= 860) {
-    explorerLayout.classList.add('mobile-detail-open');
-    const detailDrawer = document.getElementById('job-detail-drawer');
-    if (detailDrawer) {
-      detailDrawer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (isExplicitTap) {
+      explorerLayout.classList.add('mobile-detail-open');
+      const detailDrawer = document.getElementById('job-detail-drawer');
+      if (detailDrawer) {
+        detailDrawer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   }
 
@@ -947,9 +960,9 @@ function setupEventListeners() {
         name: document.getElementById('onboard-target').value.trim() || 'Primary Target',
         fullname: document.getElementById('onboard-name').value.trim(),
         email: document.getElementById('onboard-email').value.trim(),
-        phone: '+1 (555) 019-2834',
-        location: 'San Francisco, CA / Remote',
-        workAuth: 'US Citizen / Permanent Resident',
+        phone: '',
+        location: 'Remote',
+        workAuth: 'Authorized to work',
         linkedin: document.getElementById('onboard-linkedin').value.trim(),
         github: document.getElementById('onboard-github').value.trim(),
         portfolio: '',
