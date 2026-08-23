@@ -1,0 +1,14 @@
+/*
+  Access-Control-Allow-Origin: *
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/jobs_feed.json
+  Cache-Control: public, max-age=60, s-maxage=300
+  Access-Control-Allow-Origin: *
+
+/api/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type
