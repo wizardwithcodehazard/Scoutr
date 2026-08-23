@@ -88,33 +88,18 @@ function loadProfiles() {
     savedProfiles = [
       {
         name: 'Founding AI Engineer',
-        fullname: 'Sahil Sharma',
-        email: 'sahil@example.com',
+        fullname: 'Alex Mercer',
+        email: 'alex.mercer@example.com',
         phone: '+1 (555) 019-2834',
         location: 'San Francisco, CA / Remote',
-        workAuth: 'US Citizen / Permanent Resident',
-        linkedin: 'https://linkedin.com/in/sahil-sharma',
-        github: 'https://github.com/sahil-sharma',
-        portfolio: 'https://sahil.dev',
-        twitter: '@sahil_dev',
+        workAuth: 'Authorized to work in US/Remote',
+        linkedin: 'https://linkedin.com/in/alexmercer',
+        github: 'https://github.com/alexmercer',
+        portfolio: 'https://alexmercer.dev',
+        twitter: '@alex_builds',
         targetRoles: 'Founding AI Engineer, LLM Systems Engineer, Staff ML',
         skills: 'Python, PyTorch, React, TypeScript, PostgreSQL, Docker, FastAPI, Go',
         narrative: 'Senior systems engineer specialized in scalable inference, AI agents, and developer tooling.'
-      },
-      {
-        name: 'Full Stack Architect',
-        fullname: 'Sahil Sharma',
-        email: 'sahil@example.com',
-        phone: '+1 (555) 019-2834',
-        location: 'Remote / US',
-        workAuth: 'US Citizen / Permanent Resident',
-        linkedin: 'https://linkedin.com/in/sahil-sharma',
-        github: 'https://github.com/sahil-sharma',
-        portfolio: 'https://sahil.dev',
-        twitter: '@sahil_dev',
-        targetRoles: 'Staff Fullstack Engineer, Frontend Lead, Product Engineer',
-        skills: 'TypeScript, Next.js, React, Node.js, GraphQL, TailwindCSS, WebSockets',
-        narrative: 'Crafting responsive user interfaces with high-performance edge compute.'
       }
     ];
     saveProfilesToStorage(savedProfiles);
@@ -187,7 +172,14 @@ function updateProfileBadges() {
   if (profileCountBadge) profileCountBadge.textContent = userProfiles.length;
   if (feedProfileName) feedProfileName.textContent = name;
   const userDisplay = document.getElementById('user-name-display');
-  if (userDisplay) userDisplay.textContent = `${current?.fullname?.split(' ')[0] || 'Candidate'} (${name})`;
+  if (userDisplay) {
+    const firstName = current?.fullname ? current.fullname.split(' ')[0] : 'Profile';
+    userDisplay.textContent = `${firstName} (${name})`;
+  }
+  const avatar = document.getElementById('user-avatar-badge');
+  if (avatar) {
+    avatar.textContent = current?.fullname ? current.fullname.charAt(0).toUpperCase() : 'P';
+  }
 }
 
 // ==========================================================================
@@ -492,8 +484,8 @@ function renderJobDetail(job) {
 
   if (btnCopyPitch) {
     btnCopyPitch.onclick = () => {
-      const myName = currentProf.fullname || 'Sahil';
-      const mySkills = currentProf.skills || 'Python, React, TypeScript';
+      const myName = currentProf.fullname || 'a passionate candidate';
+      const mySkills = currentProf.skills || 'modern software engineering';
       const pitch = `Hi ${job.company} team, I'm ${myName}. I have strong hands-on experience in ${mySkills.split(',').slice(0, 3).join(', ')} and would love to bring my expertise to the ${job.title} role!`;
       navigator.clipboard.writeText(pitch);
       showToast('Copied tailored intro pitch to clipboard!');
@@ -797,11 +789,11 @@ function setupEventListeners() {
     btnCreateNewProfile.addEventListener('click', () => {
       const newPreset = {
         name: `Target Profile ${userProfiles.length + 1}`,
-        fullname: userProfiles[0]?.fullname || 'Sahil Sharma',
-        email: userProfiles[0]?.email || 'sahil@example.com',
+        fullname: userProfiles[0]?.fullname || '',
+        email: userProfiles[0]?.email || '',
         phone: userProfiles[0]?.phone || '',
         location: userProfiles[0]?.location || '',
-        workAuth: userProfiles[0]?.workAuth || 'US Citizen / Permanent Resident',
+        workAuth: userProfiles[0]?.workAuth || 'Authorized to work in US/Remote',
         linkedin: userProfiles[0]?.linkedin || '',
         github: userProfiles[0]?.github || '',
         portfolio: userProfiles[0]?.portfolio || '',

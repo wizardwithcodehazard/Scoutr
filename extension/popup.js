@@ -272,17 +272,17 @@ function loadProfiles() {
       allProfiles = [
         {
           name: "Founding AI Engineer",
-          fullname: "Sahil Sharma",
-          email: "sahil@example.com",
+          fullname: "Alex Mercer",
+          email: "alex.mercer@example.com",
           phone: "+1 (555) 019-2834",
           location: "San Francisco, CA (Hybrid / Remote)",
-          workAuth: "US Citizen / Permanent Resident",
-          linkedin: "https://linkedin.com/in/sahil-sharma",
-          github: "https://github.com/sahil-sharma",
-          portfolio: "https://sahil.dev",
+          workAuth: "Authorized to work in US/Remote",
+          linkedin: "https://linkedin.com/in/alexmercer",
+          github: "https://github.com/alexmercer",
+          portfolio: "https://alexmercer.dev",
           targetRoles: "Founding AI Engineer, Senior Full-Stack",
           skills: "TypeScript, Python, PyTorch, Next.js, Node.js, Scraper Studio",
-          narrative: "Full-stack & AI systems engineer with 5+ years shipping resilient scrapers, autonomous agents, and high-scale distributed applications."
+          narrative: "Full-stack & AI systems engineer with hands-on experience shipping resilient scrapers, autonomous agents, and high-scale distributed applications."
         }
       ];
     }
@@ -524,14 +524,15 @@ function deterministicMapFields(scrapedFields, rawText) {
     return l ? l.split(':').slice(1).join(':').trim() : '';
   };
 
-  const fullname = extract('Name') || 'Sahil Sharma';
-  const email = extract('Email') || 'sahil@example.com';
-  const phone = extract('Phone') || '+1 (555) 019-2834';
-  const location = extract('Location') || 'San Francisco, CA / Remote';
-  const linkedin = extract('LinkedIn') || 'https://linkedin.com/in/sahil-sharma';
-  const github = extract('GitHub') || 'https://github.com/sahil-sharma';
-  const portfolio = extract('Portfolio') || 'https://sahil.dev';
-  const workAuth = extract('Work Authorization') || 'US Citizen / Permanent Resident';
+  const extracted = extractCandidateDetails(rawText);
+  const fullname = extract('Name') || extracted.name || '';
+  const email = extract('Email') || extracted.email || '';
+  const phone = extract('Phone') || extracted.phone || '';
+  const location = extract('Location') || extracted.location || '';
+  const linkedin = extract('LinkedIn') || extracted.linkedin || '';
+  const github = extract('GitHub') || extracted.github || '';
+  const portfolio = extract('Portfolio') || extracted.portfolio || '';
+  const workAuth = extract('Work Authorization') || 'Authorized to work in US/Remote';
   const narrative = rawText.includes('Bio / Experience:') ? rawText.split('Bio / Experience:')[1].trim() : rawText;
 
   const parts = fullname.split(' ');
