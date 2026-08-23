@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Scoutr — In-Browser Form Companion",
+  "name": "Scoutr",
   "version": "2.0.0",
   "description": "In-browser companion for autonomous startup job applications and form filling, powered by Bright Data Scraper Studio and Gemini AI.",
   "permissions": [
