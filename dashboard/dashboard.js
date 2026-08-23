@@ -44,6 +44,7 @@ const profNarrativeInput = document.getElementById('prof-narrative');
 const resumeRawText = document.getElementById('resume-raw-text');
 const btnParseResume = document.getElementById('btn-parse-resume-text');
 const btnClearHistory = document.getElementById('clear-history-btn');
+const btnDeleteProfile = document.getElementById('btn-delete-profile');
 const btnCreateNewProfile = document.getElementById('btn-create-new-profile');
 
 // Onboarding Modal DOM Elements
