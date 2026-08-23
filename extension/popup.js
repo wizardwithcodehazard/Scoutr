@@ -161,7 +161,31 @@ if (openDashboardBtn) {
   });
 }
 
-// --- PROFILE MANAGEMENT ---
+// --- PROFILE MANAGEMENT & DYNAMIC DETAIL PARSING ---
+function extractCandidateDetails(rawText) {
+  if (!rawText) return {};
+  const lines = rawText.split('\n');
+  const findValue = (regex) => {
+    for (const line of lines) {
+      const match = line.match(regex);
+      if (match && match[1]) {
+        return match[1].replace(/[*_:`]/g, '').trim();
+      }
+    }
+    return '';
+  };
+
+  const name = findValue(/(?:Name|\*\*Name\*\*|\* \*\*Name\*\*)[\s*:]+([^\n\r]+)/i);
+  const email = findValue(/(?:Email|\*\*Email\*\*|\* \*\*Email\*\*)[\s*:]+([^\n\r\s]+@[^\n\r\s]+)/i);
+  const phone = findValue(/(?:Phone|\*\*Phone\*\*|\* \*\*Phone\*\*)[\s*:]+([^\n\r]+)/i);
+  const location = findValue(/(?:Location|\*\*Location\*\*|\* \*\*Location\*\*)[\s*:]+([^\n\r]+)/i);
+  const linkedin = findValue(/(?:LinkedIn|\*\*LinkedIn\*\*|\* \*\*LinkedIn\*\*)[\s*:]+([^\n\r]+)/i);
+  const github = findValue(/(?:GitHub|\*\*GitHub\*\*|\* \*\*GitHub\*\*)[\s*:]+([^\n\r]+)/i);
+  const portfolio = findValue(/(?:Portfolio|Website|\*\*Portfolio\*\*|\* \*\*Portfolio\*\*)[\s*:]+([^\n\r]+)/i);
+
+  return { name, email, phone, location, linkedin, github, portfolio };
+}
+
 function formatProfileData(p) {
   if (!p) return '';
   if (p.data && typeof p.data === 'string') return p.data;
@@ -184,12 +208,48 @@ function formatProfileData(p) {
 
 function updatePreviewCard(p) {
   if (!p) return;
-  if (previewFullname) previewFullname.textContent = p.fullname || p.name || 'Candidate';
-  if (previewRole) previewRole.textContent = p.name || p.targetRoles || 'Engineer';
-  if (previewEmail) previewEmail.innerHTML = `<i data-lucide="mail"></i> ${p.email || 'candidate@example.com'}`;
-  if (previewLocation) previewLocation.innerHTML = `<i data-lucide="map-pin"></i> ${p.location || 'San Francisco, CA / Remote'}`;
+  const rawText = formatProfileData(p);
+  const extracted = extractCandidateDetails(rawText);
+
+  const fullName = p.fullname || extracted.name || p.name || 'Candidate';
+  const roleName = p.name || p.targetRoles || 'Engineer';
+  const email = p.email || extracted.email || '';
+  const location = p.location || extracted.location || '';
+  const hasLinkedIn = p.linkedin || extracted.linkedin || rawText.toLowerCase().includes('linkedin');
+  const hasGitHub = p.github || extracted.github || rawText.toLowerCase().includes('github');
+  const hasPortfolio = p.portfolio || extracted.portfolio || rawText.toLowerCase().includes('portfolio') || rawText.toLowerCase().includes('website');
+
+  if (previewFullname) previewFullname.textContent = fullName;
+  if (previewRole) previewRole.textContent = roleName;
   
-  if (profileText) profileText.value = formatProfileData(p);
+  if (previewEmail) {
+    if (email) {
+      previewEmail.style.display = 'flex';
+      previewEmail.innerHTML = `<i data-lucide="mail"></i> ${email}`;
+    } else {
+      previewEmail.style.display = 'none';
+    }
+  }
+
+  if (previewLocation) {
+    if (location) {
+      previewLocation.style.display = 'flex';
+      previewLocation.innerHTML = `<i data-lucide="map-pin"></i> ${location}`;
+    } else {
+      previewLocation.style.display = 'none';
+    }
+  }
+
+  const linksContainer = document.querySelector('.candidate-links');
+  if (linksContainer) {
+    let linksHtml = '';
+    if (hasLinkedIn) linksHtml += `<span class="link-tag"><i data-lucide="linkedin"></i> LinkedIn</span>`;
+    if (hasGitHub) linksHtml += `<span class="link-tag"><i data-lucide="github"></i> GitHub</span>`;
+    if (hasPortfolio) linksHtml += `<span class="link-tag"><i data-lucide="globe"></i> Portfolio</span>`;
+    linksContainer.innerHTML = linksHtml;
+  }
+
+  if (profileText) profileText.value = rawText;
   if (profileNameInput) profileNameInput.value = p.name || '';
   if (window.lucide && lucide.createIcons) lucide.createIcons();
 }
@@ -262,6 +322,20 @@ if (profileSelect) {
       updatePreviewCard(prof);
       chrome.storage.local.set({ lastProfileName: selected, current_user: selected });
     }
+  });
+}
+
+if (profileText) {
+  profileText.addEventListener('input', () => {
+    const activeName = profileNameInput?.value || profileSelect?.value || 'Candidate';
+    updatePreviewCard({ name: activeName, data: profileText.value });
+  });
+}
+
+if (profileNameInput) {
+  profileNameInput.addEventListener('input', () => {
+    const activeName = profileNameInput.value || 'Candidate';
+    updatePreviewCard({ name: activeName, data: profileText?.value || '' });
   });
 }
 
@@ -406,6 +480,9 @@ Output the entire extracted profile cleanly formatted in readable plain text.`;
           const data = await res.json();
           const extractedText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
           if (profileText) profileText.value = extractedText;
+          const activeName = profileNameInput?.value || profileSelect?.value || 'AI Engineer';
+          updatePreviewCard({ name: activeName, data: extractedText });
+
           if (fileStatus) {
             fileStatus.textContent = 'OCR Extraction Complete (Projects, Experience & Bio Captured)!';
             fileStatus.style.color = '#10b981';
