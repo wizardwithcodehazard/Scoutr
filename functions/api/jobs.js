@@ -1,6 +1,7 @@
 /**
  * Cloudflare Pages Function: /api/jobs
- * Serves live startup job feed on Cloudflare's Edge Network
+ * Serves the live startup job feed on Cloudflare's Edge Network.
+ * Applies the same weighted relevance scoring as the local server.
  */
 
 export async function onRequestGet(context) {
@@ -8,24 +9,55 @@ export async function onRequestGet(context) {
     const reqUrl = new URL(context.request.url);
     const query = reqUrl.searchParams.get('q') || reqUrl.searchParams.get('query') || '';
 
-    // Attempt to fetch from static asset or pre-warmed feed
+    // Load the pre-built feed from static assets (populated by build pipeline)
     const assetUrl = new URL('/jobs_feed.json', context.request.url);
     const assetRes = await context.env.ASSETS.fetch(assetUrl);
-    
+
     if (assetRes.ok) {
       let data = await assetRes.json();
-      if (query && Array.isArray(data)) {
-        const qWords = query.toLowerCase().split(/[\s,+/]+/).filter(w => w.length > 1);
-        if (qWords.length > 0) {
-          data = data.filter(j => {
-            const title = (j.title || '').toLowerCase();
-            const comp = (j.company || '').toLowerCase();
-            const desc = (j.description || '').toLowerCase();
-            const stack = (j.techStack || []).map(t => t.toLowerCase());
-            return qWords.some(w => title.includes(w) || comp.includes(w) || desc.includes(w) || stack.some(st => st.includes(w)));
-          });
+
+      if (Array.isArray(data)) {
+        // Filter stale jobs (>90 days old) from Wellfound/Remotive stream
+        const cutoff = Date.now() - 90 * 24 * 60 * 60 * 1000;
+        data = data.filter(j => {
+          if (!j.postedDate) return true;
+          const posted = new Date(j.postedDate).getTime();
+          return isNaN(posted) || posted >= cutoff;
+        });
+
+        if (query && query.trim().length > 0) {
+          const stopWords = new Set(['and', 'for', 'the', 'with', 'in', 'at', 'to', 'of', 'a', 'an']);
+          const qWords = query.toLowerCase().trim().split(/[\s,+/]+/)
+            .filter(w => w.length >= 2 && !stopWords.has(w));
+
+          if (qWords.length > 0) {
+            // Weighted relevance: title=4x, company=2x, description/stack=1x
+            const scored = data.map(j => {
+              const titleLower = (j.title || '').toLowerCase();
+              const companyLower = (j.company || '').toLowerCase();
+              const descLower = (j.description || '').toLowerCase();
+              const stackStr = (j.techStack || []).join(' ').toLowerCase();
+
+              let score = 0;
+              qWords.forEach(w => {
+                if (titleLower.includes(w))   score += 4;
+                if (companyLower.includes(w)) score += 2;
+                if (descLower.includes(w))    score += 1;
+                if (stackStr.includes(w))     score += 1;
+              });
+              return { job: j, score };
+            });
+
+            const matched = scored
+              .filter(s => s.score > 0)
+              .sort((a, b) => b.score - a.score)
+              .map(s => s.job);
+
+            data = matched.length > 0 ? matched : data;
+          }
         }
       }
+
       return new Response(JSON.stringify(data), {
         headers: {
           'Content-Type': 'application/json',

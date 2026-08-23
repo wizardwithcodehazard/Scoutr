@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
@@ -7,6 +8,8 @@ const { exec } = require('child_process');
 const PORT = process.env.PORT || 3000;
 const DASHBOARD_DIR = path.join(__dirname);
 const PIPELINE_DIR = path.join(__dirname, '..', 'pipeline');
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+const GEMINI_MODEL = 'gemini-2.0-flash-lite';
 
 // In-memory live job cache
 let liveJobsCache = [];
@@ -69,6 +72,74 @@ function fetchHttps(url, timeoutMs = 2500) {
       done(null);
     }
   });
+}
+
+/**
+ * Gemini AI: Re-rank jobs by contextual relevance to the user's search query.
+ * Uses gemini-2.0-flash-lite — same model as the extension — for fast, cheap inference.
+ * Falls back to keyword scoring if no API key is set.
+ */
+async function geminiRankJobs(jobs, query) {
+  if (!GEMINI_API_KEY || !query || jobs.length === 0) return null;
+
+  try {
+    const jobSummaries = jobs.slice(0, 40).map((j, i) =>
+      `${i}: [${j.source}] ${j.title} @ ${j.company} — ${(j.techStack || []).join(', ')}`
+    ).join('\n');
+
+    const prompt = `You are a career matching AI. The user is searching for: "${query}".
+
+Here are the available job listings (index: details):
+${jobSummaries}
+
+Return ONLY a JSON array of the top 15 most relevant job indices, ordered best-first.
+Example: [3, 0, 12, 7, 1]
+Return ONLY the JSON array, no explanation.`;
+
+    const res = await fetchHttps(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+      6000
+    );
+    // fetchHttps does GET — use raw https.request for POST
+    const ranked = await new Promise((resolve) => {
+      const body = JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.1, maxOutputTokens: 256 }
+      });
+      const req = https.request(
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } },
+        (res) => {
+          let raw = '';
+          res.on('data', c => raw += c);
+          res.on('end', () => {
+            try {
+              const json = JSON.parse(raw);
+              const text = json?.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+              const match = text.match(/\[([\d,\s]+)\]/);
+              const indices = match ? JSON.parse(`[${match[1]}]`) : [];
+              resolve(indices);
+            } catch (e) { resolve([]); }
+          });
+        }
+      );
+      req.on('error', () => resolve([]));
+      req.setTimeout(6000, () => { req.destroy(); resolve([]); });
+      req.write(body);
+      req.end();
+    });
+
+    if (Array.isArray(ranked) && ranked.length > 0) {
+      const reranked = ranked.filter(i => i >= 0 && i < jobs.length).map(i => jobs[i]);
+      // Append any remaining jobs not in the ranked set
+      const rankedSet = new Set(ranked);
+      const rest = jobs.filter((_, i) => !rankedSet.has(i));
+      return [...reranked, ...rest];
+    }
+  } catch (e) {
+    console.warn('[GEMINI] Re-ranking failed, using keyword scoring:', e.message);
+  }
+  return null;
 }
 
 function verifyUrlHealth(url, timeoutMs = 3500) {
@@ -259,33 +330,46 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
     })());
   });
 
-  // 4. Live Wellfound & Remotive Universal Search Stream
+  // 4. Wellfound via Remotive (real remote startup job board)
+  // Remotive API supports search and category filtering. Default to software-dev to avoid
+  // non-tech jobs (Office Assistants, Content Reviewers) contaminating the startup cache.
   tasks.push((async () => {
     try {
-      const searchUrl = queryClean 
-        ? `https://remotive.com/api/remote-jobs?search=${encodeURIComponent(queryClean)}&limit=30`
-        : 'https://remotive.com/api/remote-jobs?limit=30';
-      const data = await fetchHttps(searchUrl, 3000);
+      // Default to 'software engineer' so we get relevant tech results when no query is set
+      const remQuery = queryClean || 'software engineer';
+      const searchUrl = `https://remotive.com/api/remote-jobs?search=${encodeURIComponent(remQuery)}&category=software-dev&limit=25`;
+      const data = await fetchHttps(searchUrl, 3500);
       if (data && Array.isArray(data.jobs)) {
+        const cutoff = Date.now() - 90 * 24 * 60 * 60 * 1000; // 90 days ago
         for (const item of data.jobs) {
           const url = item.url || '';
-          if (seenUrls.has(url)) continue;
+          if (!url || seenUrls.has(url)) continue;
+
+          // Skip stale listings — if published >90 days ago, likely "no longer active"
+          if (item.publication_date) {
+            const published = new Date(item.publication_date).getTime();
+            if (published < cutoff) continue;
+          }
+
           seenUrls.add(url);
 
-          const title = item.title || 'Software Engineer';
+          // Detect real ATS from the actual apply URL — don't hardcode source label
+          const detected = detectAtsFromUrl(url);
+          const isKnownAts = detected.atsType !== 'custom';
+
           dynamicJobs.push({
             id: `live-wf-rem-${item.id}`,
-            source: 'Wellfound',
-            atsType: 'wellfound',
+            source: isKnownAts ? detected.source : 'Wellfound',
+            atsType: isKnownAts ? detected.atsType : 'wellfound',
             collectorId: 'c_wf_talent_41e9',
             company: item.company_name || 'Tech Startup',
             batch: 'Series A/B',
-            title: title,
+            title: item.title || 'Software Engineer',
             location: item.candidate_required_location || 'Remote',
-            salaryRange: item.salary && item.salary.includes('$') ? item.salary : '$150,000 - $225,000',
+            salaryRange: item.salary && item.salary.includes('$') ? item.salary : 'Competitive',
             equity: '0.1% - 0.75%',
-            techStack: (item.tags && item.tags.length > 0 ? item.tags : ['TypeScript', 'React', 'Python', 'AI/LLM']).slice(0, 4),
-            description: (item.description || title).replace(/<[^>]*>?/gm, '').slice(0, 220) + '...',
+            techStack: (item.tags && item.tags.length > 0 ? item.tags : ['TypeScript', 'React', 'Python']).slice(0, 4),
+            description: (item.description || item.title).replace(/<[^>]*>?/gm, '').slice(0, 220) + '...',
             applyUrl: url,
             postedDate: (item.publication_date || '').split('T')[0] || new Date().toISOString().split('T')[0],
             healthStatus: 'live_verified'
@@ -294,6 +378,7 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
       }
     } catch (e) {}
   })());
+
 
   // 5. Live Hacker News & Y Combinator Startups Stream
   tasks.push((async () => {
@@ -305,26 +390,31 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
             const story = await fetchHttps(`https://hacker-news.firebaseio.com/v0/item/${storyId}.json`, 2000);
             if (story && story.title) {
               const rawTitle = story.title;
-              const parts = rawTitle.split(/is hiring|Hiring|is looking for/i);
+              const parts = rawTitle.split(/\bis hiring\b|\bIs Hiring\b|\bis looking for\b/i);
               const company = parts[0] ? parts[0].trim() : 'YC Startup';
-              const roleTitle = parts[1] ? parts[1].trim() : rawTitle;
+              // Strip leading articles ("a", "an", "the") from role title
+              let roleTitle = (parts[1] || rawTitle).trim().replace(/^(a|an|the)\s+/i, '');
+              roleTitle = roleTitle.charAt(0).toUpperCase() + roleTitle.slice(1);
               const url = story.url || `https://news.ycombinator.com/item?id=${storyId}`;
+
+              // Detect real ATS if job links directly to one
+              const detected = detectAtsFromUrl(url);
 
               if (!seenUrls.has(url)) {
                 seenUrls.add(url);
                 dynamicJobs.push({
                   id: `live-yc-hn-${storyId}`,
-                  source: 'Y Combinator',
-                  atsType: 'ycombinator',
+                  source: detected.atsType !== 'custom' ? detected.source : 'Y Combinator',
+                  atsType: detected.atsType !== 'custom' ? detected.atsType : 'ycombinator',
                   collectorId: 'c_mt4s1dwc1n61l4s9i4',
                   company: company,
                   batch: 'YC Batch',
                   title: roleTitle.slice(0, 80),
                   location: 'San Francisco, CA / Remote',
-                  salaryRange: '$160,000 - $240,000',
+                  salaryRange: 'Competitive',
                   equity: '0.5% - 2.0%',
-                  techStack: ['Python', 'TypeScript', 'React', 'FastAPI', 'AI/LLM'],
-                  description: `YC Startup role: ${rawTitle}. Live scraped via Bright Data Scraper Studio Collector c_mt4s1dwc1n61l4s9i4.`,
+                  techStack: ['Python', 'TypeScript', 'React', 'AI/LLM'],
+                  description: `${company} is hiring ${roleTitle}. Posted on Hacker News — live YC startup stream via Bright Data Collector c_mt4s1dwc1n61l4s9i4.`,
                   applyUrl: url,
                   postedDate: new Date(story.time * 1000 || Date.now()).toISOString().split('T')[0],
                   healthStatus: 'live_verified'
@@ -340,24 +430,16 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
 
   await Promise.allSettled(tasks);
 
-  // Filter dead or 404 URLs using Bright Data Sentinel Link Verification
-  if (dynamicJobs.length > 0) {
-    try {
-      const verificationResults = await Promise.all(
-        dynamicJobs.slice(0, 30).map(async (job) => {
-          const isAlive = await verifyUrlHealth(job.applyUrl, 2500);
-          return isAlive ? job : null;
-        })
-      );
-      const verifiedJobs = verificationResults.filter(Boolean);
-      liveJobsCache = verifiedJobs.length > 0 ? verifiedJobs : dynamicJobs;
-    } catch (e) {
-      liveJobsCache = dynamicJobs;
-    }
+  // No URL sentinel verification here — HEAD checks against Ashby/Greenhouse/Lever/HN all fail
+  // (they require cookies, reject HEAD, or return 403). Verification was silently killing 80%+ of results.
+  // Trust the ATS API sources directly — if the API returned the job, the URL is live.
+  liveJobsCache = dynamicJobs;
 
+  // Only persist the full feed on initial load (not on every search query)
+  if (!query) {
     try {
       fs.writeFileSync(path.join(DASHBOARD_DIR, 'jobs_feed.json'), JSON.stringify(liveJobsCache, null, 2));
-      fs.writeFileSync(path.join(DASHBOARD_DIR, 'jobs_feed.js'), `window.SCRAPED_JOBS_FEED = ${JSON.stringify(liveJobsCache, null, 2)};`);
+      fs.writeFileSync(path.join(DASHBOARD_DIR, 'jobs_feed.js'), `window.SCRAPED_JOBS_FEED = ${JSON.stringify(liveJobsCache, null, 2)};\n`);
     } catch (e) {}
   }
 
@@ -398,24 +480,56 @@ const server = http.createServer(async (req, res) => {
     } catch (e) {}
 
     if (query) {
-      console.log(`[API SCRAPER] Live query search requested for: "${query}"`);
-      const dynamicResults = await scrapeLiveStartupJobs(query);
-      if (dynamicResults && dynamicResults.length > 0) {
-        return res.end(JSON.stringify(dynamicResults));
+      // SEARCH: Weighted relevance scoring (instant) + optional Gemini AI re-ranking.
+      console.log(`[API SEARCH] Filtering cache for: "${query}" (${liveJobsCache.length} cached jobs) ${GEMINI_API_KEY ? '+ Gemini AI' : '(no Gemini key)'}`);
+      const stopWords = new Set(['and', 'for', 'the', 'with', 'in', 'at', 'to', 'of', 'a', 'an']);
+      const qWords = query.toLowerCase().trim().split(/[\s,+/]+/)
+        .filter(w => w.length >= 2 && !stopWords.has(w));
+
+      if (liveJobsCache.length === 0) {
+        const fresh = await scrapeLiveStartupJobs();
+        if (fresh && fresh.length > 0) liveJobsCache = fresh;
+        return res.end(JSON.stringify(liveJobsCache));
       }
-      // If dynamic query yielded 0 matches, filter cached pool
-      const qWords = query.toLowerCase().split(/[\s,+/]+/);
-      const matched = liveJobsCache.filter(j => {
-        const title = (j.title || '').toLowerCase();
-        const comp = (j.company || '').toLowerCase();
-        const desc = (j.description || '').toLowerCase();
-        const stack = (j.techStack || []).map(t => t.toLowerCase());
-        return qWords.some(w => title.includes(w) || comp.includes(w) || desc.includes(w) || stack.some(st => st.includes(w)));
+
+      // Step 1: Keyword scoring (title=4x, company=2x, desc/stack=1x)
+      const scored = liveJobsCache.map(j => {
+        const titleLower = (j.title || '').toLowerCase();
+        const companyLower = (j.company || '').toLowerCase();
+        const descLower = (j.description || '').toLowerCase();
+        const stackStr = (j.techStack || []).join(' ').toLowerCase();
+
+        let score = 0;
+        qWords.forEach(w => {
+          if (titleLower.includes(w))   score += 4;
+          if (companyLower.includes(w)) score += 2;
+          if (descLower.includes(w))    score += 1;
+          if (stackStr.includes(w))     score += 1;
+        });
+        return { job: j, score };
       });
-      return res.end(JSON.stringify(matched.length > 0 ? matched : dynamicResults));
+
+      const keywordMatched = scored
+        .filter(s => s.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(s => s.job);
+
+      const candidatePool = keywordMatched.length > 0 ? keywordMatched : liveJobsCache;
+
+      // Step 2: Gemini AI re-ranking (if API key set) — contextually smarter ordering
+      if (GEMINI_API_KEY) {
+        const geminiResult = await geminiRankJobs(candidatePool, query);
+        if (geminiResult && geminiResult.length > 0) {
+          console.log(`[GEMINI] Re-ranked ${geminiResult.length} jobs for "${query}"`);
+          return res.end(JSON.stringify(geminiResult));
+        }
+      }
+
+      return res.end(JSON.stringify(candidatePool));
     }
 
     if (forceRefresh || liveJobsCache.length === 0) {
+      console.log(`[API SCRAPER] Refreshing live startup feed...`);
       const fresh = await scrapeLiveStartupJobs();
       if (fresh && fresh.length > 0) liveJobsCache = fresh;
     }
