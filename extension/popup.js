@@ -207,7 +207,18 @@ function formatProfileData(p) {
 }
 
 function updatePreviewCard(p) {
-  if (!p) return;
+  if (!p) {
+    if (previewFullname) previewFullname.textContent = 'No Profile Loaded';
+    if (previewRole) previewRole.textContent = 'Setup in Profile & OCR';
+    if (previewEmail) previewEmail.style.display = 'none';
+    if (previewLocation) previewLocation.style.display = 'none';
+    const linksContainer = document.querySelector('.candidate-links');
+    if (linksContainer) linksContainer.innerHTML = '';
+    if (profileText) profileText.value = '';
+    if (profileNameInput) profileNameInput.value = '';
+    if (window.lucide && lucide.createIcons) lucide.createIcons();
+    return;
+  }
   const rawText = formatProfileData(p);
   const extracted = extractCandidateDetails(rawText);
 
@@ -267,24 +278,12 @@ function loadProfiles() {
       allProfiles = [];
     }
 
-    // Fallback default if empty
     if (allProfiles.length === 0) {
-      allProfiles = [
-        {
-          name: "Founding AI Engineer",
-          fullname: "Alex Mercer",
-          email: "alex.mercer@example.com",
-          phone: "+1 (555) 019-2834",
-          location: "San Francisco, CA (Hybrid / Remote)",
-          workAuth: "Authorized to work in US/Remote",
-          linkedin: "https://linkedin.com/in/alexmercer",
-          github: "https://github.com/alexmercer",
-          portfolio: "https://alexmercer.dev",
-          targetRoles: "Founding AI Engineer, Senior Full-Stack",
-          skills: "TypeScript, Python, PyTorch, Next.js, Node.js, Scraper Studio",
-          narrative: "Full-stack & AI systems engineer with hands-on experience shipping resilient scrapers, autonomous agents, and high-scale distributed applications."
-        }
-      ];
+      if (profileSelect) {
+        profileSelect.innerHTML = '<option value="">No Profile (Upload in Profile tab)</option>';
+      }
+      updatePreviewCard(null);
+      return;
     }
 
     if (profileSelect) {

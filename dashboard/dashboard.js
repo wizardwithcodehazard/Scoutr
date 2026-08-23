@@ -84,43 +84,32 @@ function loadProfiles() {
     savedProfiles = [];
   }
 
-  if (!Array.isArray(savedProfiles) || savedProfiles.length === 0) {
-    savedProfiles = [
-      {
-        name: 'Founding AI Engineer',
-        fullname: 'Alex Mercer',
-        email: 'alex.mercer@example.com',
-        phone: '+1 (555) 019-2834',
-        location: 'San Francisco, CA / Remote',
-        workAuth: 'Authorized to work in US/Remote',
-        linkedin: 'https://linkedin.com/in/alexmercer',
-        github: 'https://github.com/alexmercer',
-        portfolio: 'https://alexmercer.dev',
-        twitter: '@alex_builds',
-        targetRoles: 'Founding AI Engineer, LLM Systems Engineer, Staff ML',
-        skills: 'Python, PyTorch, React, TypeScript, PostgreSQL, Docker, FastAPI, Go',
-        narrative: 'Senior systems engineer specialized in scalable inference, AI agents, and developer tooling.'
-      }
-    ];
-    saveProfilesToStorage(savedProfiles);
+  if (!Array.isArray(savedProfiles)) {
+    savedProfiles = [];
   }
 
   userProfiles = savedProfiles;
-  activeProfileIndex = 0;
+  activeProfileIndex = userProfiles.length > 0 ? 0 : -1;
 
   renderProfilePills();
   populateProfileForm();
   updateProfileBadges();
+
+  if (userProfiles.length === 0) {
+    setTimeout(() => {
+      openOnboardingModal();
+    }, 400);
+  }
 }
 
 function saveProfilesToStorage(profiles) {
   try {
     localStorage.setItem('allUserProfiles', JSON.stringify(profiles));
-    localStorage.setItem('lastProfileName', profiles[activeProfileIndex]?.name || profiles[0]?.name);
+    localStorage.setItem('lastProfileName', profiles[activeProfileIndex]?.name || profiles[0]?.name || '');
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       chrome.storage.local.set({
         allUserProfiles: profiles,
-        lastProfileName: profiles[activeProfileIndex]?.name || profiles[0]?.name
+        lastProfileName: profiles[activeProfileIndex]?.name || profiles[0]?.name || ''
       });
     }
   } catch (e) {
@@ -130,6 +119,10 @@ function saveProfilesToStorage(profiles) {
 
 function renderProfilePills() {
   if (!profilePillsContainer) return;
+  if (userProfiles.length === 0) {
+    profilePillsContainer.innerHTML = `<span style="font-size:12px; color:var(--text-muted); padding:4px 8px;">No profiles created yet. Use the form below to create your primary persona.</span>`;
+    return;
+  }
   profilePillsContainer.innerHTML = userProfiles.map((prof, idx) => `
     <button class="prof-tab-pill ${idx === activeProfileIndex ? 'active' : ''}" onclick="selectProfile(${idx})">
       <span>${escapeHtml(prof.name || `Profile ${idx + 1}`)}</span>
