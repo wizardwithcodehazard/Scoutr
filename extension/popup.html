@@ -16,7 +16,7 @@
         <img src="icon.png" alt="Scoutr Logo" class="brand-icon-img">
         <div class="brand-text">
           <h1>SCOUTR</h1>
-          <span class="subtext">Autonomous Auto-Fill</span>
+          <span class="subtext">Auto-Apply Engine</span>
         </div>
       </div>
       <div class="header-actions">
@@ -26,66 +26,144 @@
       </div>
     </header>
 
-    <!-- ATS DETECTION PILL -->
-    <div class="target-ats-banner" id="ats-banner">
-      <span class="ats-dot"></span>
-      <span id="target-ats-text" class="ats-name">Detecting ATS Portal...</span>
-    </div>
-
-    <!-- PROFILE SWITCHER -->
-    <div class="profile-card">
-      <div class="card-header-row">
-        <span class="card-label">ACTIVE CANDIDATE PROFILE</span>
-        <select id="profile-select" class="profile-dropdown-select">
-          <!-- Populated dynamically -->
-        </select>
-      </div>
-
-      <!-- IDENTITY PREVIEW -->
-      <div class="identity-preview-box">
-        <div class="candidate-header">
-          <strong id="preview-fullname">Sahil Sharma</strong>
-          <span id="preview-role" class="badge-role">Founding AI Engineer</span>
-        </div>
-        <div class="candidate-details">
-          <span id="preview-email" class="detail-item"><i data-lucide="mail"></i> sahil@example.com</span>
-          <span id="preview-location" class="detail-item"><i data-lucide="map-pin"></i> San Francisco / Remote</span>
-        </div>
-        <div class="candidate-links">
-          <span class="link-tag"><i data-lucide="linkedin"></i> LinkedIn</span>
-          <span class="link-tag"><i data-lucide="github"></i> GitHub</span>
-          <span class="link-tag"><i data-lucide="globe"></i> Portfolio</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- STAGED APPLICATION CONTEXT (IF OPENED FROM DASHBOARD) -->
-    <div class="staged-role-card" id="staged-card" style="display: none;">
-      <div class="staged-top">
-        <span class="staged-label">STAGED ROLE</span>
-        <span class="staged-match" id="staged-match-badge">94% Match</span>
-      </div>
-      <div class="staged-info">
-        <strong id="staged-company">Company</strong> · <span id="staged-role">Software Engineer</span>
-      </div>
-    </div>
-
-    <!-- MAIN AUTO-FILL ACTION BUTTON -->
-    <div class="action-footer">
-      <button id="fill-btn" class="btn-primary-fill">
-        <i data-lucide="sparkles"></i>
-        <span>Scan & Auto-Fill Form</span>
+    <!-- NAVIGATION TABS -->
+    <div class="nav-tabs-wrapper">
+      <button class="nav-tab active" data-tab="tab-autofill">
+        <i data-lucide="zap"></i>
+        <span>Auto-Fill</span>
       </button>
-      <div id="status" class="status-message">Ready to inspect active application page.</div>
-      
-      <div class="security-badge">
-        <span>🔒</span>
-        <span>Local-First Sync · Zero Data Retention</span>
+      <button class="nav-tab" data-tab="tab-profile">
+        <i data-lucide="user-check"></i>
+        <span>Profile & OCR</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-settings">
+        <i data-lucide="sliders"></i>
+        <span>Settings</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: AUTO-FILL -->
+    <div id="tab-autofill" class="tab-pane active">
+      <!-- ATS RADAR BANNER -->
+      <div class="target-ats-banner" id="ats-banner">
+        <span class="ats-dot"></span>
+        <span id="target-ats-text" class="ats-name">Detecting ATS Portal...</span>
       </div>
+
+      <!-- ACTIVE PROFILE SUMMARY -->
+      <div class="app-card">
+        <div class="card-header-row">
+          <span class="card-label">ACTIVE PROFILE</span>
+          <select id="profile-select" class="profile-dropdown-select">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <div class="identity-preview-box">
+          <div class="candidate-header">
+            <strong id="preview-fullname">Sahil Sharma</strong>
+            <span id="preview-role" class="badge-role">Founding AI Engineer</span>
+          </div>
+          <div class="candidate-details">
+            <span id="preview-email" class="detail-item"><i data-lucide="mail"></i> sahil@example.com</span>
+            <span id="preview-location" class="detail-item"><i data-lucide="map-pin"></i> San Francisco / Remote</span>
+          </div>
+          <div class="candidate-links">
+            <span class="link-tag"><i data-lucide="linkedin"></i> LinkedIn</span>
+            <span class="link-tag"><i data-lucide="github"></i> GitHub</span>
+            <span class="link-tag"><i data-lucide="globe"></i> Portfolio</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGED ROLE CONTEXT -->
+      <div class="staged-role-card" id="staged-card" style="display: none;">
+        <div class="staged-top">
+          <span class="staged-label">STAGED ROLE</span>
+          <span class="staged-match" id="staged-match-badge">94% Match</span>
+        </div>
+        <div class="staged-info">
+          <strong id="staged-company">Company</strong> · <span id="staged-role">Software Engineer</span>
+        </div>
+      </div>
+
+      <!-- PRIMARY ACTION BUTTON -->
+      <div class="action-footer">
+        <button id="fill-btn" class="btn-primary-fill">
+          <i data-lucide="sparkles"></i>
+          <span>Scan & Auto-Fill Form</span>
+        </button>
+        <div id="status" class="status-message">Ready to inspect active application page.</div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PROFILE & OCR -->
+    <div id="tab-profile" class="tab-pane">
+      <div class="app-card">
+        <div class="profile-name-row">
+          <input type="text" id="profile-name" class="text-input" placeholder="Profile Label (e.g. AI Engineer)">
+          <button id="save-profile-btn" class="btn-sm btn-secondary">Save</button>
+          <button id="delete-profile-btn" class="btn-sm btn-danger" title="Delete Profile">✕</button>
+        </div>
+
+        <textarea id="user-profile" class="profile-textarea" rows="5" placeholder="Paste your resume summary, bio, GitHub, LinkedIn, and past experience here..."></textarea>
+
+        <!-- VOICE DICTATION & RESUME OCR -->
+        <div class="voice-ocr-row">
+          <button id="record-btn" class="btn-action">
+            <i data-lucide="mic" class="btn-icon"></i>
+            <span>Voice Dictate</span>
+          </button>
+
+          <label for="image-upload" class="btn-action upload-label">
+            <i data-lucide="camera" class="btn-icon"></i>
+            <span>Resume OCR</span>
+            <input type="file" id="image-upload" accept="image/*" style="display: none;">
+          </label>
+        </div>
+
+        <div id="image-preview-container" class="preview-wrap" style="display: none;">
+          <img id="image-preview" src="" alt="OCR Preview">
+          <button id="clear-image-btn" class="clear-btn">Remove</button>
+        </div>
+        <div id="file-status" class="status-hint"></div>
+      </div>
+    </div>
+
+    <!-- TAB 3: SETTINGS & TONE -->
+    <div id="tab-settings" class="tab-pane">
+      <div class="app-card">
+        <div class="setting-item">
+          <label class="setting-label">Response Tone</label>
+          <select id="tone-select" class="select-input">
+            <option value="Professional & Concise">Professional & Concise</option>
+            <option value="Empathetic & Warm">Empathetic & Warm</option>
+            <option value="High Energy & Driven">High Energy & Driven</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label class="setting-label">Form Language</label>
+          <input type="text" id="language-input" class="text-input" value="English">
+        </div>
+
+        <div class="setting-item">
+          <label class="setting-label">Google Gemini API Key</label>
+          <div class="api-key-row">
+            <input type="password" id="api-key-input" class="text-input" placeholder="AIzaSy...">
+            <button id="save-api-key-btn" class="btn-sm btn-secondary">Save Key</button>
+          </div>
+          <span id="api-key-hint" class="hint-subtext">Keys are stored securely in local browser storage.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLOBAL FOOTER -->
+    <div class="security-badge">
+      <span>🔒</span>
+      <span>Local-First Storage · Zero Cloud Retention</span>
     </div>
   </div>
-
-  <textarea id="user-profile" style="display: none;"></textarea>
 
   <script src="lucide.js"></script>
   <script src="popup.js"></script>

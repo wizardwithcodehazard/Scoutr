@@ -11,6 +11,26 @@ const profileSelect = document.getElementById('profile-select');
 const openDashboardBtn = document.getElementById('open-dashboard-btn');
 const targetAtsText = document.getElementById('target-ats-text');
 
+// Profile Editor Elements
+const profileNameInput = document.getElementById('profile-name');
+const saveProfileButton = document.getElementById('save-profile-btn');
+const deleteProfileButton = document.getElementById('delete-profile-btn');
+
+// Voice & OCR Elements
+const recordButton = document.getElementById('record-btn');
+const imageUpload = document.getElementById('image-upload');
+const imagePreviewContainer = document.getElementById('image-preview-container');
+const imagePreview = document.getElementById('image-preview');
+const clearImageBtn = document.getElementById('clear-image-btn');
+const fileStatus = document.getElementById('file-status');
+
+// Settings Elements
+const toneSelect = document.getElementById('tone-select');
+const languageInput = document.getElementById('language-input');
+const apiKeyInput = document.getElementById('api-key-input');
+const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+const apiKeyHint = document.getElementById('api-key-hint');
+
 // Preview Card DOM Elements
 const previewFullname = document.getElementById('preview-fullname');
 const previewRole = document.getElementById('preview-role');
@@ -30,11 +50,31 @@ let currentApiKey = '';
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
   if (window.lucide && lucide.createIcons) lucide.createIcons();
+  setupTabs();
   loadProfiles();
   loadApiKey();
   detectCurrentAts();
   loadStagedJob();
 });
+
+// --- TAB SWITCHING LOGIC ---
+function setupTabs() {
+  const tabs = document.querySelectorAll('.nav-tab');
+  const panes = document.querySelectorAll('.tab-pane');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+
+      tab.classList.add('active');
+      const target = tab.getAttribute('data-tab');
+      const targetPane = document.getElementById(target);
+      if (targetPane) targetPane.classList.add('active');
+      if (window.lucide && lucide.createIcons) lucide.createIcons();
+    });
+  });
+}
 
 // Detect Target ATS on active tab
 async function detectCurrentAts() {
@@ -80,8 +120,28 @@ function loadApiKey() {
   if (chrome.storage && chrome.storage.local) {
     chrome.storage.local.get(['gemini_api_key'], (res) => {
       currentApiKey = res.gemini_api_key || '';
+      if (apiKeyInput && currentApiKey) {
+        apiKeyInput.value = currentApiKey;
+      }
     });
   }
+}
+
+if (saveApiKeyBtn && apiKeyInput) {
+  saveApiKeyBtn.addEventListener('click', () => {
+    const val = apiKeyInput.value.trim();
+    currentApiKey = val;
+    chrome.storage.local.set({ gemini_api_key: val }, () => {
+      if (apiKeyHint) {
+        apiKeyHint.textContent = 'API key saved successfully!';
+        apiKeyHint.style.color = '#10b981';
+        setTimeout(() => {
+          apiKeyHint.textContent = 'Keys are stored securely in local browser storage.';
+          apiKeyHint.style.color = '#94a3b8';
+        }, 2500);
+      }
+    });
+  });
 }
 
 // Open Dashboard
@@ -118,7 +178,9 @@ function updatePreviewCard(p) {
   if (previewRole) previewRole.textContent = p.name || p.targetRoles || 'Engineer';
   if (previewEmail) previewEmail.innerHTML = `<i data-lucide="mail"></i> ${p.email || 'candidate@example.com'}`;
   if (previewLocation) previewLocation.innerHTML = `<i data-lucide="map-pin"></i> ${p.location || 'San Francisco, CA / Remote'}`;
+  
   if (profileText) profileText.value = formatProfileData(p);
+  if (profileNameInput) profileNameInput.value = p.name || '';
   if (window.lucide && lucide.createIcons) lucide.createIcons();
 }
 
@@ -176,6 +238,12 @@ function loadProfiles() {
   });
 }
 
+function saveProfilesAndRefresh() {
+  chrome.storage.local.set({ allUserProfiles: JSON.stringify(allProfiles) }, () => {
+    loadProfiles();
+  });
+}
+
 if (profileSelect) {
   profileSelect.addEventListener('change', () => {
     const selected = profileSelect.value;
@@ -184,6 +252,141 @@ if (profileSelect) {
       updatePreviewCard(prof);
       chrome.storage.local.set({ lastProfileName: selected, current_user: selected });
     }
+  });
+}
+
+if (saveProfileButton) {
+  saveProfileButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    const name = profileNameInput.value.trim();
+    const data = profileText.value.trim();
+
+    if (!name) {
+      alert('Please enter a profile label.');
+      return;
+    }
+
+    const idx = allProfiles.findIndex(p => p.name === name);
+    if (idx > -1) {
+      allProfiles[idx] = { ...allProfiles[idx], name, data };
+    } else {
+      allProfiles.push({ name, data });
+    }
+
+    chrome.storage.local.set({ lastProfileName: name, current_user: name });
+    saveProfilesAndRefresh();
+    alert(`Profile '${name}' saved!`);
+  });
+}
+
+if (deleteProfileButton) {
+  deleteProfileButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    const name = profileSelect.value;
+    if (!name) return;
+
+    if (confirm(`Delete profile '${name}'?`)) {
+      allProfiles = allProfiles.filter(p => p.name !== name);
+      chrome.storage.local.remove('lastProfileName');
+      saveProfilesAndRefresh();
+    }
+  });
+}
+
+// --- VOICE DICTATION ---
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (SpeechRecognition && recordButton) {
+  const rec = new SpeechRecognition();
+  rec.continuous = true;
+  rec.interimResults = true;
+  let isRecording = false;
+
+  recordButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (isRecording) {
+      rec.stop();
+      recordButton.classList.remove('recording');
+      recordButton.querySelector('span').textContent = 'Voice Dictate';
+      isRecording = false;
+    } else {
+      try {
+        rec.start();
+        recordButton.classList.add('recording');
+        recordButton.querySelector('span').textContent = 'Stop Dictating';
+        isRecording = true;
+      } catch (err) {
+        if (fileStatus) fileStatus.textContent = 'Microphone busy or not allowed.';
+      }
+    }
+  });
+
+  rec.onresult = (evt) => {
+    for (let i = evt.resultIndex; i < evt.results.length; ++i) {
+      if (evt.results[i].isFinal) {
+        profileText.value += (profileText.value ? '\n' : '') + evt.results[i][0].transcript;
+      }
+    }
+  };
+}
+
+// --- RESUME OCR UPLOAD ---
+if (imageUpload) {
+  imageUpload.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (fileStatus) fileStatus.textContent = 'Reading resume file...';
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64Data = reader.result.split(',')[1];
+      if (imagePreview) imagePreview.src = reader.result;
+      if (imagePreviewContainer) imagePreviewContainer.style.display = 'flex';
+
+      if (!currentApiKey) {
+        if (fileStatus) fileStatus.textContent = 'Please enter Gemini API key in Settings tab for OCR.';
+        return;
+      }
+
+      if (fileStatus) fileStatus.textContent = 'Extracting resume structure via Gemini 2.0 OCR...';
+
+      try {
+        const ocrPrompt = `Extract candidate details from this resume image. Output as clean text formatted with Name, Email, Phone, Location, Skills, and Bio.`;
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${currentApiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { text: ocrPrompt },
+                { inline_data: { mime_type: file.type || 'image/png', data: base64Data } }
+              ]
+            }]
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const extractedText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (profileText) profileText.value = extractedText;
+          if (fileStatus) fileStatus.textContent = 'OCR Extraction Complete!';
+        } else {
+          if (fileStatus) fileStatus.textContent = 'OCR request failed. Check API key.';
+        }
+      } catch (err) {
+        if (fileStatus) fileStatus.textContent = 'OCR network error.';
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+if (clearImageBtn) {
+  clearImageBtn.addEventListener('click', () => {
+    if (imagePreview) imagePreview.src = '';
+    if (imagePreviewContainer) imagePreviewContainer.style.display = 'none';
+    if (imageUpload) imageUpload.value = null;
+    if (fileStatus) fileStatus.textContent = '';
   });
 }
 
@@ -265,6 +468,8 @@ if (fillButton) {
       // If Gemini API Key is configured, use Gemini 2.0 Flash for semantic reasoning
       if (currentApiKey) {
         statusText.textContent = `Found ${scrapedFields.length} fields. Correlating via Gemini 2.0 Flash...`;
+        const tone = toneSelect?.value || 'Professional & Concise';
+        const lang = languageInput?.value || 'English';
 
         const systemPrompt = `
           You are an intelligent autonomous job applicant assistant.
@@ -275,6 +480,10 @@ if (fillButton) {
           
           CANDIDATE PROFILE:
           "${profileText.value}"
+          
+          SETTINGS:
+          Tone: ${tone}
+          Language: ${lang}
           
           FORM FIELDS IDENTIFIED (JSON):
           ${JSON.stringify(scrapedFields)}
