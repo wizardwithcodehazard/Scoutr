@@ -46,6 +46,34 @@ const stagedMatchBadge = document.getElementById('staged-match-badge');
 // --- STATE ---
 let allProfiles = [];
 let currentApiKey = '';
+const PRIMARY_GEMINI_MODEL = 'gemini-3.5-flash-lite';
+const FALLBACK_GEMINI_MODEL = 'gemini-2.0-flash';
+
+// Resilient Gemini API Dispatcher (Prioritizes gemini-3.5-flash-lite)
+async function callGeminiApi(payload, apiKey) {
+  try {
+    let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${PRIMARY_GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) return res;
+
+    console.warn(`[Scoutr Gemini API] ${PRIMARY_GEMINI_MODEL} returned ${res.status}, cascading to ${FALLBACK_GEMINI_MODEL}`);
+    return await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${FALLBACK_GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    return await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${FALLBACK_GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  }
+}
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -353,18 +381,14 @@ if (imageUpload) {
       try {
         const ocrPrompt = `Extract candidate details from this resume image. Output as clean text formatted with Name, Email, Phone, Location, Skills, and Bio.`;
         const mime = file.type || 'image/png';
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${currentApiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [
-                { text: ocrPrompt },
-                { inlineData: { mimeType: mime, data: base64Data } }
-              ]
-            }]
-          })
-        });
+        const res = await callGeminiApi({
+          contents: [{
+            parts: [
+              { text: ocrPrompt },
+              { inlineData: { mimeType: mime, data: base64Data } }
+            ]
+          }]
+        }, currentApiKey);
 
         if (res.ok) {
           const data = await res.json();
@@ -523,11 +547,9 @@ if (fillButton) {
         `;
 
         try {
-          const apiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${currentApiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] })
-          });
+          const apiRes = await callGeminiApi({
+            contents: [{ parts: [{ text: systemPrompt }] }]
+          }, currentApiKey);
 
           if (apiRes.ok) {
             const resultData = await apiRes.json();
