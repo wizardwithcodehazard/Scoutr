@@ -1480,40 +1480,168 @@ body {
 .toast.show { transform: translateY(0); opacity: 1; }
 
 /* ==========================================================================
-   11. RESPONSIVE BREAKPOINTS
+   11. COMPREHENSIVE RESPONSIVE WEB DESIGN (RWD)
    ========================================================================== */
-@media (max-width: 960px) {
-  .hero-heading { font-size: 40px; }
-  .mockup-body-preview { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 1024px) {
+  .app-window-standalone {
+    max-width: 100%;
+    margin: 16px 16px 40px;
+  }
+  .split-explorer-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .jobs-list-pane {
+    max-height: 440px;
+  }
+  .job-detail-pane {
+    position: static;
+    top: auto;
+  }
+  .profile-editor-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .profile-presets-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 12px 16px;
+  }
+  .app-window-standalone {
+    margin: 10px 10px 30px;
+    border-radius: 12px;
+  }
+  .window-body {
+    padding: 14px;
+  }
+  .hero-heading { font-size: 38px; }
+  .mockup-body-preview { grid-template-columns: 1fr; }
   .process-grid { grid-template-columns: 1fr; }
   .philosophy-grid { grid-template-columns: 1fr; }
   .pricing-grid { grid-template-columns: 1fr; }
-  .profile-editor-layout { grid-template-columns: 1fr; }
-  .split-explorer-layout { grid-template-columns: 1fr; }
-  .jobs-list-pane { max-height: 380px; }
-  .job-detail-pane { position: static; }
   .collector-cards-row { grid-template-columns: 1fr; }
-  .footer-card { flex-direction: column; gap: 24px; padding: 28px; }
-  .nav-links { gap: 14px; }
+  .footer-card { flex-direction: column; gap: 20px; padding: 24px; }
+  .nav-links { display: none; }
+  
+  .filter-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .filter-pills-row {
+    overflow-x: auto;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .detail-actions-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .btn-detail-apply, .btn-detail-pitch, .btn-detail-track {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .pipeline-metrics-bar {
+    -webkit-overflow-scrolling: touch;
+  }
+  .pipeline-table-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .clean-table {
+    min-width: 580px;
+  }
+
+  .modal-card {
+    width: calc(100vw - 24px);
+    max-height: 90vh;
+    margin: 12px;
+  }
+  .modal-body {
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
-@media (max-width: 680px) {
-  .hero-landing { padding: 90px 16px 50px; }
-  .hero-heading { font-size: 32px; }
-  .hero-subheading { font-size: 15px; }
-  .hero-buttons { flex-direction: column; width: 100%; gap: 10px; }
+@media (max-width: 540px) {
+  .app-header {
+    padding: 10px 12px;
+  }
+  .app-brand-title {
+    font-size: 15px;
+  }
+  .app-badge-pill {
+    display: none;
+  }
+  .btn-app-secondary span {
+    display: none;
+  }
+  .btn-app-secondary {
+    padding: 7px 10px;
+  }
+  .user-pill {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  #user-name-display {
+    max-width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hero-landing { padding: 80px 14px 40px; }
+  .hero-heading { font-size: 28px; }
+  .hero-subheading { font-size: 14px; }
+  .hero-buttons { flex-direction: column; width: 100%; gap: 8px; }
   .btn-hero-white, .btn-hero-glass { width: 100%; text-align: center; justify-content: center; }
-  .capsule-nav { padding: 6px 12px; }
-  .nav-links { display: none; }
-  .mockup-title { display: none; }
-  .mockup-body-preview { grid-template-columns: 1fr; padding: 16px; }
-  .mockup-job-card { height: auto; min-height: 220px; }
-  .form-row-2 { grid-template-columns: 1fr; }
-  .window-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .capsule-nav { padding: 5px 10px; }
+
+  .window-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 12px;
+  }
   .window-controls { display: none; }
-  .window-tabs { width: 100%; overflow-x: auto; padding-bottom: 4px; }
-  .filter-toolbar { flex-direction: column; align-items: stretch; }
-  .filter-pills-row { overflow-x: auto; padding-bottom: 4px; }
-  .pipeline-table-card { overflow-x: auto; }
-  .clean-table { min-width: 540px; }
+  .window-tabs {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .w-tab {
+    padding: 6px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .job-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .mjc-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .job-header-card {
+    padding: 14px;
+  }
+  .job-title-large {
+    font-size: 18px;
+  }
 }
