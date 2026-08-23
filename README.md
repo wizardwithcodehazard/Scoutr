@@ -152,13 +152,13 @@ npx -p @brightdata/cli bdata login
 
 # 2. Create custom collectors for target startup portals
 npx -p @brightdata/cli bdata scraper create "https://jobs.ashbyhq.com/linear" "Extract job title, department, location, compensation, tech stack, and apply URL"
-# Returns Collector ID: c_mt4s1dwc1n61l4s9i4
+# Returns Collector ID: <collector_id>
 
 # 3. Trigger live parallel runs & stream structured output
-npx -p @brightdata/cli bdata scraper run c_mt4s1dwc1n61l4s9i4 "https://jobs.ashbyhq.com/linear" --pretty
+npx -p @brightdata/cli bdata scraper run <collector_id> "https://jobs.ashbyhq.com/linear" --pretty
 
 # 4. Self-heal collector when portal layout or DOM classes change
-npx -p @brightdata/cli bdata scraper heal c_mt4s1dwc1n61l4s9i4 "The job card container changed from .job-item to [data-test='job-listing']"
+npx -p @brightdata/cli bdata scraper heal <collector_id> "The job card container changed from .job-item to [data-test='job-listing']"
 ```
 
 ---
@@ -171,7 +171,7 @@ Below is an authentic sample of the normalized structured JSON extracted across 
 [
   {
     "id": "ashby_linear_01",
-    "collectorId": "c_mt4s1dwc1n61l4s9i4",
+    "collectorId": "c_ashby_portal_collector",
     "title": "Staff Product Engineer - AI Systems",
     "company": "Linear",
     "batch": "YC W20",
@@ -188,7 +188,7 @@ Below is an authentic sample of the normalized structured JSON extracted across 
   },
   {
     "id": "gh_scale_02",
-    "collectorId": "c_gh_portal_4e1",
+    "collectorId": "c_gh_portal_collector",
     "title": "AI Builder Intern",
     "company": "Scale AI",
     "batch": "Series F",
