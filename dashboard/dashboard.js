@@ -507,6 +507,16 @@ function renderJobDetail(job) {
     };
   }
 
+  // Mobile UX: activate mobile-detail-open class & scroll smoothly
+  const explorerLayout = document.querySelector('.split-explorer-layout');
+  if (explorerLayout && window.innerWidth <= 860) {
+    explorerLayout.classList.add('mobile-detail-open');
+    const detailDrawer = document.getElementById('job-detail-drawer');
+    if (detailDrawer) {
+      detailDrawer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   if (window.lucide && lucide.createIcons) lucide.createIcons();
 }
 
@@ -999,6 +1009,19 @@ function setupEventListeners() {
         appModal.classList.remove('active');
         appForm.reset();
         showToast('Application logged to pipeline!');
+      }
+    });
+  }
+
+  // Mobile Back Button to Return to Feed
+  const mobileBackBtn = document.getElementById('btn-mobile-back-jobs');
+  if (mobileBackBtn) {
+    mobileBackBtn.addEventListener('click', () => {
+      const explorerLayout = document.querySelector('.split-explorer-layout');
+      if (explorerLayout) {
+        explorerLayout.classList.remove('mobile-detail-open');
+        const gridContainer = document.getElementById('job-grid-container');
+        if (gridContainer) gridContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
   }

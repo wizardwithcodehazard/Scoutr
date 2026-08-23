@@ -1479,20 +1479,24 @@ body {
 .toast { position: fixed; bottom: 20px; right: 20px; background: #1a202c; color: white; padding: 9px 16px; border-radius: 9999px; font-size: 12.5px; font-weight: 600; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); transform: translateY(60px); opacity: 0; transition: all 0.2s ease; z-index: 3000; }
 .toast.show { transform: translateY(0); opacity: 1; }
 
+.btn-mobile-back {
+  display: none;
+}
+
 /* ==========================================================================
-   11. COMPREHENSIVE RESPONSIVE WEB DESIGN (RWD)
+   11. NATIVE-FEEL MOBILE MASTER-DETAIL & RESPONSIVE ARCHITECTURE
    ========================================================================== */
 @media (max-width: 1024px) {
   .app-window-standalone {
     max-width: 100%;
-    margin: 16px 16px 40px;
+    margin: 14px 14px 40px;
   }
   .split-explorer-layout {
     grid-template-columns: 1fr;
     gap: 16px;
   }
   .jobs-list-pane {
-    max-height: 440px;
+    max-height: 480px;
   }
   .job-detail-pane {
     position: static;
@@ -1507,18 +1511,86 @@ body {
   }
 }
 
+@media (max-width: 860px) {
+  .btn-mobile-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    color: var(--sky-top);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: all 0.15s ease;
+  }
+  .btn-mobile-back:hover {
+    background: #edf2f7;
+    transform: translateX(-2px);
+  }
+
+  /* Mobile Master-Detail View Switching */
+  .split-explorer-layout {
+    display: block;
+  }
+  .split-explorer-layout .jobs-list-pane {
+    display: flex;
+    flex-direction: column;
+    max-height: none;
+    overflow: visible;
+  }
+  .split-explorer-layout .job-detail-pane {
+    display: none;
+  }
+
+  /* When a job is active on mobile */
+  .split-explorer-layout.mobile-detail-open .jobs-list-pane {
+    display: none;
+  }
+  .split-explorer-layout.mobile-detail-open .job-detail-pane {
+    display: block;
+    animation: mobileSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes mobileSlideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .feed-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .detail-actions-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .btn-detail-apply, .btn-detail-pitch, .btn-detail-track {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 768px) {
   .app-header {
-    padding: 12px 16px;
+    padding: 12px 14px;
   }
   .app-window-standalone {
-    margin: 10px 10px 30px;
+    margin: 8px 8px 24px;
     border-radius: 12px;
   }
   .window-body {
-    padding: 14px;
+    padding: 12px;
   }
-  .hero-heading { font-size: 38px; }
+  .hero-heading { font-size: 36px; }
   .mockup-body-preview { grid-template-columns: 1fr; }
   .process-grid { grid-template-columns: 1fr; }
   .philosophy-grid { grid-template-columns: 1fr; }
@@ -1530,41 +1602,36 @@ body {
   .filter-toolbar {
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
+    gap: 8px;
   }
   .filter-pills-row {
     overflow-x: auto;
     padding-bottom: 6px;
     -webkit-overflow-scrolling: touch;
   }
-  
-  .detail-actions-row {
-    flex-direction: column;
-    gap: 8px;
-  }
-  .btn-detail-apply, .btn-detail-pitch, .btn-detail-track {
-    width: 100%;
-    justify-content: center;
-  }
-  
+
   .pipeline-metrics-bar {
     -webkit-overflow-scrolling: touch;
+    gap: 6px;
+  }
+  .pipe-stat-btn {
+    padding: 6px 10px;
   }
   .pipeline-table-card {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
   .clean-table {
-    min-width: 580px;
+    min-width: 540px;
   }
 
   .modal-card {
-    width: calc(100vw - 24px);
-    max-height: 90vh;
-    margin: 12px;
+    width: calc(100vw - 20px);
+    max-height: 92vh;
+    margin: 10px;
   }
   .modal-body {
-    max-height: calc(90vh - 120px);
+    max-height: calc(92vh - 110px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -1572,10 +1639,10 @@ body {
 
 @media (max-width: 540px) {
   .app-header {
-    padding: 10px 12px;
+    padding: 8px 10px;
   }
   .app-brand-title {
-    font-size: 15px;
+    font-size: 14px;
   }
   .app-badge-pill {
     display: none;
@@ -1584,31 +1651,32 @@ body {
     display: none;
   }
   .btn-app-secondary {
-    padding: 7px 10px;
+    padding: 6px 8px;
   }
   .user-pill {
-    padding: 4px 8px;
-    font-size: 11px;
+    padding: 3px 6px;
+    font-size: 10.5px;
+    gap: 5px;
   }
   #user-name-display {
-    max-width: 90px;
+    max-width: 75px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .hero-landing { padding: 80px 14px 40px; }
-  .hero-heading { font-size: 28px; }
-  .hero-subheading { font-size: 14px; }
+  .hero-landing { padding: 75px 12px 35px; }
+  .hero-heading { font-size: 26px; }
+  .hero-subheading { font-size: 13.5px; }
   .hero-buttons { flex-direction: column; width: 100%; gap: 8px; }
   .btn-hero-white, .btn-hero-glass { width: 100%; text-align: center; justify-content: center; }
-  .capsule-nav { padding: 5px 10px; }
+  .capsule-nav { padding: 4px 8px; }
 
   .window-bar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
-    padding: 8px 12px;
+    gap: 6px;
+    padding: 6px 10px;
   }
   .window-controls { display: none; }
   .window-tabs {
@@ -1616,18 +1684,25 @@ body {
     overflow-x: auto;
     padding-bottom: 4px;
     -webkit-overflow-scrolling: touch;
+    gap: 4px;
   }
   .w-tab {
-    padding: 6px 10px;
-    font-size: 12px;
+    padding: 6px 9px;
+    font-size: 11.5px;
     white-space: nowrap;
+  }
+  .w-tab span {
+    font-size: 11.5px;
   }
 
   .form-row-2 {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 8px;
   }
   
+  .job-card {
+    padding: 12px;
+  }
   .job-card-top {
     flex-direction: column;
     align-items: flex-start;
@@ -1639,9 +1714,13 @@ body {
     gap: 4px;
   }
   .job-header-card {
-    padding: 14px;
+    padding: 12px;
   }
   .job-title-large {
-    font-size: 18px;
+    font-size: 16px;
+  }
+  .detail-stats-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 }
