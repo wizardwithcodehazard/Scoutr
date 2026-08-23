@@ -288,16 +288,41 @@ function renderJobs() {
   if (!jobGrid) return;
 
   const currentProfile = userProfiles[activeProfileIndex];
+  const qWords = searchQuery && searchQuery.trim() 
+    ? searchQuery.toLowerCase().trim().split(/[\s,+/]+/).filter(w => w.length > 0)
+    : [];
 
-  // Calculate Match Scores & Sort
+  // Calculate Match Scores & Relevance Sorting
   const scoredJobs = jobsData.map(job => {
     const matchResult = calculateJobMatch(job, currentProfile);
+    let searchHits = 0;
+
+    if (qWords.length > 0) {
+      const titleLower = (job.title || '').toLowerCase();
+      const companyLower = (job.company || '').toLowerCase();
+      const descLower = (job.description || '').toLowerCase();
+      const stackStr = (job.techStack || []).join(' ').toLowerCase();
+      const sourceStr = (job.source || '').toLowerCase();
+      const locStr = (job.location || '').toLowerCase();
+      const combined = `${titleLower} ${companyLower} ${descLower} ${stackStr} ${sourceStr} ${locStr}`;
+
+      qWords.forEach(w => {
+        if (combined.includes(w)) searchHits++;
+      });
+    }
+
     return {
       ...job,
       matchScore: matchResult.score,
-      matchedSkills: matchResult.matchedSkills
+      matchedSkills: matchResult.matchedSkills,
+      searchHits: searchHits
     };
-  }).sort((a, b) => b.matchScore - a.matchScore);
+  }).sort((a, b) => {
+    if (qWords.length > 0 && b.searchHits !== a.searchHits) {
+      return b.searchHits - a.searchHits;
+    }
+    return b.matchScore - a.matchScore;
+  });
 
   const filtered = scoredJobs.filter(job => {
     let matchesSource = false;
@@ -310,25 +335,16 @@ function renderJobs() {
     } else if (activeFilter === 'Lever') {
       matchesSource = (job.source && job.source.toLowerCase().includes('lever')) || (job.atsType === 'lever') || (job.applyUrl && job.applyUrl.includes('lever'));
     } else if (activeFilter === 'Y Combinator') {
-      matchesSource = (job.source && job.source.toLowerCase().includes('combinator')) || (job.atsType === 'ycombinator') || (job.applyUrl && job.applyUrl.includes('workatastartup'));
+      matchesSource = (job.source && job.source.toLowerCase().includes('combinator')) || (job.atsType === 'ycombinator') || (job.applyUrl && (job.applyUrl.includes('workatastartup') || job.applyUrl.includes('ycombinator') || job.applyUrl.includes('item?id=')));
     } else if (activeFilter === 'Wellfound') {
-      matchesSource = (job.source && job.source.toLowerCase().includes('wellfound')) || (job.atsType === 'wellfound') || (job.applyUrl && job.applyUrl.includes('wellfound'));
+      matchesSource = (job.source && job.source.toLowerCase().includes('wellfound')) || (job.atsType === 'wellfound') || (job.applyUrl && (job.applyUrl.includes('wellfound') || job.applyUrl.includes('remotive')));
     } else {
       matchesSource = job.source && job.source.toLowerCase().includes(activeFilter.toLowerCase());
     }
 
     let matchesQuery = true;
-    if (searchQuery && searchQuery.trim()) {
-      const qWords = searchQuery.toLowerCase().trim().split(/[\s,+/]+/).filter(w => w.length > 0);
-      const titleLower = (job.title || '').toLowerCase();
-      const companyLower = (job.company || '').toLowerCase();
-      const descLower = (job.description || '').toLowerCase();
-      const stackStr = (job.techStack || []).join(' ').toLowerCase();
-      const sourceStr = (job.source || '').toLowerCase();
-      const locStr = (job.location || '').toLowerCase();
-      const combined = `${titleLower} ${companyLower} ${descLower} ${stackStr} ${sourceStr} ${locStr}`;
-
-      matchesQuery = qWords.every(w => combined.includes(w));
+    if (qWords.length > 0) {
+      matchesQuery = job.searchHits > 0;
     }
     return matchesSource && matchesQuery;
   });
