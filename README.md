@@ -137,8 +137,8 @@ Scoutr organizes data collection across dedicated ATS pipelines:
 
 ## 📺 Video Demo
 
-> **Watch the 3-minute technical walkthrough of Scoutr:**  
-> 🔗 **[YouTube Video Demo](https://youtu.be/YOUR_DEMO_LINK)** *(Sub-3 minute walkthrough of Scraper Studio ingestion, AST self-healing, Gemini 3.5 re-ranking, and in-browser form autofill)*
+> **Watch the technical walkthrough of Scoutr:**  
+> 🔗 **[YouTube Video Demo](https://youtu.be/QuAfRHvdwXg)** *(Walkthrough of Scraper Studio ingestion, AST self-healing, Gemini 3.5 re-ranking, and in-browser form autofill)*
 
 ---
 
