@@ -139,14 +139,12 @@ scoutr/
 ├── dashboard/                 # [Module B: Landing Page & Command Center]
 │   ├── index.html             # Product landing page & macOS card preview
 │   ├── app.html               # Split-explorer dashboard & pipeline tracker
-│   ├── demo_form.html         # Live interactive application form for testing
 │   ├── server.js              # High-concurrency parallel scraper server
 │   ├── dashboard.js           # Multi-profile manager, match scoring, and cache
 │   ├── dashboard.css          # Daytime sky blue tactile design system
 │   ├── jobs_feed.js           # Dynamic feed bundle
 │   ├── jobs_feed.json         # Scraped structured JSON dataset
-│   ├── _headers               # Cloudflare Pages edge CORS & cache headers
-│   └── _redirects             # Cloudflare Pages clean route rewrites
+│   └── _headers               # Cloudflare Pages edge CORS & cache headers
 │
 ├── functions/                 # [Module C: Cloudflare Edge Functions]
 │   └── api/
@@ -174,7 +172,6 @@ npm run dashboard
 ```
 * **Landing Page:** [http://localhost:3000](http://localhost:3000)
 * **Command Center App:** [http://localhost:3000/app](http://localhost:3000/app)
-* **Live Demo Form:** [http://localhost:3000/demo_form](http://localhost:3000/demo_form)
 
 ### 2. Load the Chrome Extension (Manifest V3)
 1. Open Google Chrome and navigate to `chrome://extensions`.
