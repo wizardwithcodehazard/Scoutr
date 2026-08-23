@@ -692,8 +692,10 @@ window.updateAppStatus = function (id, newStatus) {
 };
 
 window.deleteApplication = function (id) {
+  if (!confirm('Are you sure you want to remove this application from your pipeline?')) return;
   applications = applications.filter(a => a.id !== id);
   saveApplications();
+  renderApplications();
   showToast('Application record removed.');
 };
 
@@ -836,6 +838,7 @@ function setupEventListeners() {
         showToast('You must keep at least 1 career profile!');
         return;
       }
+      if (!confirm(`Are you sure you want to delete profile "${userProfiles[activeProfileIndex]?.name || 'Current Profile'}"?`)) return;
       userProfiles.splice(activeProfileIndex, 1);
       activeProfileIndex = Math.max(0, activeProfileIndex - 1);
       saveProfilesToStorage(userProfiles);
@@ -911,35 +914,16 @@ function setupEventListeners() {
       triggerPipelineBtn.disabled = true;
       triggerPipelineBtn.innerHTML = '<i data-lucide="refresh-cw" class="w-icon" style="animation: spin 1s linear infinite;"></i><span>Syncing...</span>';
       if (window.lucide && lucide.createIcons) lucide.createIcons();
+      showToast('Syncing live scrapers with ATS portals...');
       await loadJobsFeed(true);
-      triggerPipelineBtn.disabled = false;
-      triggerPipelineBtn.innerHTML = '<i data-lucide="refresh-cw" class="w-icon"></i><span>Sync Pipeline</span>';
-      if (window.lucide && lucide.createIcons) lucide.createIcons();
+      setTimeout(() => {
+        triggerPipelineBtn.disabled = false;
+        triggerPipelineBtn.innerHTML = '<i data-lucide="refresh-cw" class="w-icon"></i><span>Sync Pipeline</span>';
+        if (window.lucide && lucide.createIcons) lucide.createIcons();
+        showToast('Pipeline sync complete! Updated live jobs.');
+      }, 500);
     });
   }
-
-  // Active Profile Tag click to edit
-  if (feedProfileName && feedProfileName.parentElement) {
-    feedProfileName.parentElement.style.cursor = 'pointer';
-    feedProfileName.parentElement.title = 'Click to customize active profile';
-    feedProfileName.parentElement.addEventListener('click', () => {
-      tabButtons.forEach(b => b.classList.remove('active'));
-      viewPanes.forEach(p => p.classList.remove('active'));
-      const profileTabBtn = document.querySelector('[data-tab="profile-view"]');
-      if (profileTabBtn) profileTabBtn.classList.add('active');
-      const profileView = document.getElementById('profile-view');
-      if (profileView) profileView.classList.add('active');
-    });
-  }
-
-  // Modals & Extension Setup Guide
-  const openExtGuideBtn = document.getElementById('open-ext-guide-btn');
-  const closeExtGuideBtn = document.getElementById('close-ext-guide-btn');
-  const dismissExtGuideBtn = document.getElementById('dismiss-ext-guide-btn');
-
-  if (openExtGuideBtn && extGuideModal) openExtGuideBtn.addEventListener('click', () => extGuideModal.classList.add('active'));
-  if (closeExtGuideBtn && extGuideModal) closeExtGuideBtn.addEventListener('click', () => extGuideModal.classList.remove('active'));
-  if (dismissExtGuideBtn && extGuideModal) dismissExtGuideBtn.addEventListener('click', () => extGuideModal.classList.remove('active'));
 
   // Onboarding Modal Handlers
   const closeOnboardingBtn = document.getElementById('close-onboarding-btn');
@@ -951,7 +935,35 @@ function setupEventListeners() {
   };
 
   if (closeOnboardingBtn) closeOnboardingBtn.addEventListener('click', closeOnboard);
-  if (skipOnboardingBtn) skipOnboardingBtn.addEventListener('click', closeOnboard);
+  if (skipOnboardingBtn) {
+    skipOnboardingBtn.addEventListener('click', () => {
+      if (userProfiles.length === 0) {
+        const defaultProfile = {
+          name: 'Software Engineer',
+          fullname: 'Candidate',
+          email: '',
+          phone: '',
+          location: 'Remote',
+          workAuth: 'Authorized to work',
+          linkedin: '',
+          github: '',
+          portfolio: '',
+          twitter: '',
+          targetRoles: 'Software Engineer, Full Stack, AI Engineer',
+          skills: 'Python, TypeScript, React, Node.js, SQL',
+          narrative: 'Software engineer building modern web and AI applications.'
+        };
+        userProfiles = [defaultProfile];
+        activeProfileIndex = 0;
+        saveProfilesToStorage(userProfiles);
+        renderProfilePills();
+        populateProfileForm();
+        updateProfileBadges();
+        renderJobs();
+      }
+      closeOnboard();
+    });
+  }
 
   if (onboardForm) {
     onboardForm.addEventListener('submit', (e) => {

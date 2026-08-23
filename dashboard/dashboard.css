@@ -812,17 +812,21 @@ body {
 .user-pill { display: flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid var(--border-light); padding: 4px 10px; border-radius: 9999px; font-size: 11.5px; font-weight: 600; cursor: pointer; }
 .avatar { width: 16px; height: 16px; background: var(--sky-top); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
 
-/* FIXED VIEWPORT WINDOW CONTAINER (ZERO TAB RESIZE JITTER) */
+/* RESPONSIVE FLUID VIEWPORT WINDOW CONTAINER */
 .app-window-standalone {
   background: var(--bg-white);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow-window);
   border: 1px solid var(--border-light);
-  height: 820px;
-  max-height: calc(100vh - 100px);
+  min-height: calc(100vh - 80px);
+  height: auto;
   display: flex;
   flex-direction: column;
+}
+
+.tab-label-short {
+  display: none;
 }
 
 .window-bar {
@@ -1580,12 +1584,19 @@ body {
 }
 
 @media (max-width: 768px) {
-  .app-header {
+  .tab-label-full {
+    display: none;
+  }
+  .tab-label-short {
+    display: inline;
+  }
+  .app-header, .app-top-header {
     padding: 12px 14px;
   }
   .app-window-standalone {
     margin: 8px 8px 24px;
     border-radius: 12px;
+    min-height: calc(100vh - 40px);
   }
   .window-body {
     padding: 12px;
