@@ -1,6 +1,7 @@
 <div align="center">
 
-# Scoutr
+# Scoutr ✦
+<img width="3168" height="1344" alt="Gemini_Generated_Image_lxdfiilxdfiilxdf" src="https://github.com/user-attachments/assets/0b3b24fc-b709-4798-9637-9f5407c489a8" />
 ### Autonomous Startup Discovery, Self-Healing ATS Scrapers & In-Browser Application Engine
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
