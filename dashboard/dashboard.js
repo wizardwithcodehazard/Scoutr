@@ -756,11 +756,48 @@ function setupEventListeners() {
     });
   });
 
-  // Search & Filter
+  // Search & Realtime Dynamic Portal Scraping
+  let searchDebounceTimer = null;
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       searchQuery = e.target.value;
       renderJobs();
+
+      clearTimeout(searchDebounceTimer);
+      const trimmed = (searchQuery || '').trim();
+      if (trimmed.length >= 2) {
+        searchDebounceTimer = setTimeout(async () => {
+          const streamPill = document.getElementById('pipeline-status-text');
+          if (streamPill) streamPill.textContent = `Scraping live for "${trimmed}"...`;
+          
+          try {
+            const res = await fetch(`/api/jobs?q=${encodeURIComponent(trimmed)}`);
+            if (res.ok) {
+              const dynamicJobs = await res.json();
+              if (Array.isArray(dynamicJobs) && dynamicJobs.length > 0) {
+                // Merge freshly scraped jobs into jobsData avoiding duplicates
+                const existingIds = new Set(jobsData.map(j => j.id));
+                let newCount = 0;
+                dynamicJobs.forEach(job => {
+                  if (!existingIds.has(job.id)) {
+                    jobsData.unshift(job);
+                    existingIds.add(job.id);
+                    newCount++;
+                  }
+                });
+                renderJobs();
+                if (newCount > 0) {
+                  showToast(`Scraped ${newCount} live startup roles matching "${trimmed}"!`);
+                }
+              }
+            }
+          } catch (err) {
+            console.warn('[SEARCH SCRAPE] Error:', err);
+          } finally {
+            if (streamPill) streamPill.textContent = 'Operational';
+          }
+        }, 500);
+      }
     });
   }
 

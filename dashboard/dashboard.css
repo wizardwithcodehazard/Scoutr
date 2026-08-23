@@ -1900,6 +1900,39 @@ body {
     padding: 14px;
   }
 
+  .features-section {
+    padding: 50px 14px 40px;
+  }
+  .features-title {
+    font-size: 26px;
+    line-height: 1.25;
+  }
+  .features-subtitle {
+    font-size: 13.5px;
+    margin-bottom: 22px;
+  }
+  .feature-pills-cluster {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    max-width: 360px;
+    margin: 0 auto 30px;
+  }
+  .feature-capsule {
+    padding: 8px 10px;
+    font-size: 11.5px;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+    white-space: nowrap;
+    border-radius: 9999px;
+  }
+  .feature-capsule i {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
   .window-bar {
     flex-direction: column;
     align-items: flex-start;

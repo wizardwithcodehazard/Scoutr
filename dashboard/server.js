@@ -402,9 +402,12 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({ url: targetUrl, active: isAlive, timestamp: Date.now() }));
   }
 
-  // API: Get Live Scraped Jobs
+  // API: Get Live Scraped Jobs (With Realtime Dynamic Query Scraping)
   if (pathname === '/api/jobs') {
     res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    const query = parsedUrl.searchParams.get('q') || parsedUrl.searchParams.get('query') || '';
+    const forceRefresh = parsedUrl.searchParams.get('refresh') === 'true';
+
     try {
       if (fs.existsSync(path.join(DASHBOARD_DIR, 'jobs_feed.json'))) {
         const fileData = JSON.parse(fs.readFileSync(path.join(DASHBOARD_DIR, 'jobs_feed.json'), 'utf8'));
@@ -413,8 +416,28 @@ const server = http.createServer(async (req, res) => {
         }
       }
     } catch (e) {}
-    if (liveJobsCache.length === 0) {
-      await scrapeLiveStartupJobs();
+
+    if (query) {
+      console.log(`[API SCRAPER] Live query search requested for: "${query}"`);
+      const dynamicResults = await scrapeLiveStartupJobs(query);
+      if (dynamicResults && dynamicResults.length > 0) {
+        return res.end(JSON.stringify(dynamicResults));
+      }
+      // If dynamic query yielded 0 matches, filter cached pool
+      const qWords = query.toLowerCase().split(/[\s,+/]+/);
+      const matched = liveJobsCache.filter(j => {
+        const title = (j.title || '').toLowerCase();
+        const comp = (j.company || '').toLowerCase();
+        const desc = (j.description || '').toLowerCase();
+        const stack = (j.techStack || []).map(t => t.toLowerCase());
+        return qWords.some(w => title.includes(w) || comp.includes(w) || desc.includes(w) || stack.some(st => st.includes(w)));
+      });
+      return res.end(JSON.stringify(matched.length > 0 ? matched : dynamicResults));
+    }
+
+    if (forceRefresh || liveJobsCache.length === 0) {
+      const fresh = await scrapeLiveStartupJobs();
+      if (fresh && fresh.length > 0) liveJobsCache = fresh;
     }
     return res.end(JSON.stringify(liveJobsCache));
   }

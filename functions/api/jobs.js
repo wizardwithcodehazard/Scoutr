@@ -5,17 +5,32 @@
 
 export async function onRequestGet(context) {
   try {
+    const reqUrl = new URL(context.request.url);
+    const query = reqUrl.searchParams.get('q') || reqUrl.searchParams.get('query') || '';
+
     // Attempt to fetch from static asset or pre-warmed feed
     const assetUrl = new URL('/jobs_feed.json', context.request.url);
     const assetRes = await context.env.ASSETS.fetch(assetUrl);
     
     if (assetRes.ok) {
-      const data = await assetRes.json();
+      let data = await assetRes.json();
+      if (query && Array.isArray(data)) {
+        const qWords = query.toLowerCase().split(/[\s,+/]+/).filter(w => w.length > 1);
+        if (qWords.length > 0) {
+          data = data.filter(j => {
+            const title = (j.title || '').toLowerCase();
+            const comp = (j.company || '').toLowerCase();
+            const desc = (j.description || '').toLowerCase();
+            const stack = (j.techStack || []).map(t => t.toLowerCase());
+            return qWords.some(w => title.includes(w) || comp.includes(w) || desc.includes(w) || stack.some(st => st.includes(w)));
+          });
+        }
+      }
       return new Response(JSON.stringify(data), {
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
-          'Cache-Control': 'public, max-age=60, s-maxage=300'
+          'Cache-Control': 'public, max-age=30, s-maxage=60'
         }
       });
     }
