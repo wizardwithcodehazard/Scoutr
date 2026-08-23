@@ -26,38 +26,41 @@
 Scoutr operates across three decoupled layers: **Bright Data Ingestion & Self-Healing Pipeline**, **Command Center & Match Scoring Engine**, and **In-Browser Chrome Autofill Companion**.
 
 ```mermaid
-flowchart TD
-    subgraph Discovery["1. Bright Data Ingestion Layer"]
-        A["Startup ATS Portals<br/>(Ashby, Greenhouse, Lever, YC)"]
-        B["Scraper Studio Collectors<br/>(Parallel Multi-Source Pipeline)"]
-        C["AST Self-Healing Sentinel<br/>(bdata scraper heal)"]
-        D["Stale-Listing Filter<br/>(30-Day Freshness Gate)"]
-        E["Dynamic Ingestion Server<br/>(dashboard/server.js)"]
+flowchart LR
+    subgraph Ingestion ["1. Bright Data Ingestion Layer"]
+        direction TB
+        A["Startup ATS Portals\n(Ashby, Greenhouse, Lever, YC)"]
+        B["Scraper Studio Collectors\n(Parallel Ingestion Pipeline)"]
+        C["AST Self-Healing Sentinel\n(bdata scraper heal)"]
+        D["Freshness Filter\n(30-Day Active Listing Gate)"]
+        E["Ingestion Server API\n(dashboard/server.js)"]
     end
 
-    subgraph Command["2. Scoutr Command Center"]
-        F["Linear-Style Split Explorer<br/>(Active Jobs Feed)"]
-        G["Gemini 3.5 Flash Lite<br/>(Semantic Re-Ranking Engine)"]
-        H["Strict Token Matcher<br/>(Regex Word-Boundary Search)"]
-        I["Pipeline Tracker<br/>(Applied, Interviewing, Offers)"]
-        J["Responsive Pagination<br/>(Mobile & Desktop Views)"]
+    subgraph Command ["2. Scoutr Command Center"]
+        direction TB
+        F["Split Explorer UI\n(Active Jobs Stream)"]
+        G["Gemini 3.5 Flash Lite\n(Semantic Re-Ranking)"]
+        H["Strict Token Matcher\n(Regex Word-Boundary Search)"]
+        I["Pipeline Tracker\n(Application Status Hub)"]
+        J["Responsive Pagination\n(Mobile & Desktop Views)"]
     end
 
-    subgraph Extension["3. Chrome Extension Companion"]
-        K["Live Target ATS Page<br/>(Job Application Form)"]
-        L["In-Browser DOM Scanner<br/>(scrapePageForForms)"]
-        M["Gemini 3.5 Semantic Mapper<br/>(Dynamic Field Autofill)"]
-        N["Synthetic Event Dispatcher<br/>(input, change, blur)"]
+    subgraph Extension ["3. Chrome Extension Companion"]
+        direction TB
+        K["Target ATS Job Page\n(Live Application Form)"]
+        L["In-Browser Form Scanner\n(DOM Heuristic Parser)"]
+        M["Gemini 3.5 Field Mapper\n(AI Form Field Synthesis)"]
+        N["Synthetic Event Dispatcher\n(1-Click Autofill Engine)"]
     end
 
-    A -->|bdata run| B
-    B -->|DOM Shift Detected| C
+    A --> B
+    B -->|DOM Shift| C
     C -->|AST Repaired| B
-    B -->|Active Feed| D
-    D -->|Fresh Stream| E
+    B --> D
+    D --> E
 
-    E -->|Semantic Query| G
-    E -->|Word Match| H
+    E -->|AI Search| G
+    E -->|Regex Match| H
     G --> F
     H --> F
     F --> I
@@ -67,7 +70,7 @@ flowchart TD
     K --> L
     L --> M
     M --> N
-    N -->|Auto-Log Status| I
+    N -->|Auto Log| I
 ```
 
 ---
