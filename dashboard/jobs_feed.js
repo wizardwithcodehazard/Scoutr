@@ -8,7 +8,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Senior / Staff Fullstack Engineer",
     "location": "Europe",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -31,7 +31,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Senior / Staff Fullstack Engineer",
     "location": "North America",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -54,7 +54,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Senior / Staff Product Engineer",
     "location": "Europe",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -77,7 +77,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Account Executive, Growth",
     "location": "North America",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -100,7 +100,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Software Engineer, Growth ",
     "location": "San Francisco",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -123,7 +123,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Software Engineer, Infrastructure",
     "location": "San Francisco",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -146,7 +146,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Software Engineer, Core Services",
     "location": "San Francisco",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -169,7 +169,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Software Engineer, Client Infrastructure",
     "location": "San Francisco",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -192,7 +192,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Account Manager - India ",
     "location": "India",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -215,7 +215,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Enterprise Solutions Engineer - North America",
     "location": "United States",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -238,7 +238,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Account Executive - Japan",
     "location": "Japan",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -261,7 +261,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Sales Development - United States",
     "location": "San Francisco",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -284,7 +284,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Enterprise Account Executive ",
     "location": "San Francisco",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -307,7 +307,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Director of Sales, Enterprise",
     "location": "San Francisco",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -330,7 +330,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Senior Research Engineer",
     "location": "San Francisco",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -353,7 +353,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Senior Agent Product Manager",
     "location": "San Francisco",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -376,7 +376,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Enterprise Sales Engineer",
     "location": "San Francisco, CA",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -399,7 +399,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "High Growth Enterprise Account Executive",
     "location": "San Francisco, CA",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -422,7 +422,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Enterprise Sales Director - Majors",
     "location": "US - Remote",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -445,7 +445,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Software Engineer, Platform",
     "location": "San Francisco, CA",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -468,7 +468,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Member of Technical Staff - Systems",
     "location": "New York",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -491,7 +491,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Forward Deployed Engineer - ML",
     "location": "New York",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -514,7 +514,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Business Operations Manager",
     "location": "New York",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -537,7 +537,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A/B",
     "title": "Member of Technical Staff - ML Performance",
     "location": "New York",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$170,000 - $240,000",
     "equity": "0.15% - 0.75%",
     "techStack": [
       "TypeScript",
@@ -560,7 +560,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Account Executive, AI Native",
     "location": "New York City, NY; San Francisco, CA | New York City, NY",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -583,7 +583,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Account Executive - DNB",
     "location": "Singapore",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -606,7 +606,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Account Executive, Public Sector",
     "location": "Sydney, Australia",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -629,7 +629,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Account Executive - Public Sector (ASEAN)",
     "location": "Singapore",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -652,7 +652,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Account Executive, Emerging Enterprise (Berlin, Germany)",
     "location": "Berlin, Germany",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -675,7 +675,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Account Executive, Enterprise",
     "location": "San Francisco, CA • New York, NY • United States",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -698,7 +698,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Account Executive, Enterprise (Bengaluru, India)",
     "location": "Bengaluru, India",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -721,7 +721,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Account Executive, Enterprise (Berlin, Germany)",
     "location": "Berlin, Germany",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -744,7 +744,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "AI Advisory Consultant",
     "location": "San Francisco, CA; New York, NY",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -767,7 +767,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "AI Advisory Principal",
     "location": "San Francisco, CA; New York, NY",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -790,7 +790,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "AI Applications Ops Manager, GPS",
     "location": "Doha, Qatar ",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -813,7 +813,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "AI Builder Intern",
     "location": "San Francisco, CA",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -836,7 +836,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Account Manager, Advertising Solutions",
     "location": "San Francisco Bay Area ",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -859,7 +859,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Advertising Operations Manager",
     "location": "San Francisco Bay Area or New York (Remote)",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -882,7 +882,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Associate Product Counsel, Safety",
     "location": "San Francisco Bay Area",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -905,7 +905,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Commercial Policy Lead, Brand Safety & Malware",
     "location": "San Francisco Bay Area ",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -928,7 +928,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Accounting Manager, GL Operations & Intercompany",
     "location": "Remote - Canada",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -951,7 +951,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Accounting Manager, GL Operations & Intercompany",
     "location": "Remote - USA",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -974,7 +974,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "Accounting Manager, Lending & Credit Products",
     "location": "Remote - USA",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -997,7 +997,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Scaleup",
     "title": "AMLCO & Senior Compliance Associate",
     "location": "Remote - Cyprus",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$185,000 - $265,000",
     "equity": "Competitive Equity",
     "techStack": [
       "Python",
@@ -1020,7 +1020,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "W24",
     "title": "ML Engineer / LLM Autonomous Systems",
     "location": "San Francisco, CA / Remote",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$160,000 - $240,000",
     "equity": "0.5% - 2.0%",
     "techStack": [
       "Python",
@@ -1042,7 +1042,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "S21",
     "title": "AI & Automation Software Engineer",
     "location": "New York, NY",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$160,000 - $240,000",
     "equity": "0.5% - 2.0%",
     "techStack": [
       "Python",
@@ -1064,7 +1064,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "S16",
     "title": "Senior AI Software Engineer - Clinical Ambient",
     "location": "Mountain View, CA / Remote",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$160,000 - $240,000",
     "equity": "0.5% - 2.0%",
     "techStack": [
       "React",
@@ -1086,7 +1086,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "W17",
     "title": "Founding Speech & AI Systems Engineer",
     "location": "New York, NY / Remote",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$160,000 - $240,000",
     "equity": "0.5% - 2.0%",
     "techStack": [
       "Python",
@@ -1108,7 +1108,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "W22",
     "title": "Senior Backend & Financial API Engineer",
     "location": "Austin, TX / Remote",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$160,000 - $240,000",
     "equity": "0.5% - 2.0%",
     "techStack": [
       "Go",
@@ -1130,7 +1130,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A",
     "title": "Content Reviewer - English US",
     "location": "USA",
-    "salaryRange": "$14/hour",
+    "salaryRange": "$150,000 - $220,000",
     "equity": "0.1% - 0.5%",
     "techStack": [
       "android",
@@ -1152,7 +1152,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A",
     "title": "Senior Golang Developer",
     "location": "Europe, USA, UK, Canada, Australia, Singapore",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$150,000 - $220,000",
     "equity": "0.1% - 0.5%",
     "techStack": [
       ".Net",
@@ -1174,7 +1174,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A",
     "title": "Vice President, Technology & Digital Strategy",
     "location": "USA",
-    "salaryRange": "175k - 190k",
+    "salaryRange": "$150,000 - $220,000",
     "equity": "0.1% - 0.5%",
     "techStack": [
       "business intelligence",
@@ -1196,7 +1196,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A",
     "title": "Senior Data Engineer",
     "location": "LATAM, Europe, USA, Canada, APAC",
-    "salaryRange": ",000 - ,000",
+    "salaryRange": "$150,000 - $220,000",
     "equity": "0.1% - 0.5%",
     "techStack": [
       ".Net",
@@ -1218,7 +1218,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A",
     "title": "Senior Independent AI Engineer / Architect",
     "location": "Americas, Europe, Israel",
-    "salaryRange": "$120 - $170 /hour",
+    "salaryRange": "$150,000 - $220,000",
     "equity": "0.1% - 0.5%",
     "techStack": [
       "go",
@@ -1240,7 +1240,7 @@ window.SCRAPED_JOBS_FEED = [
     "batch": "Series A",
     "title": "Senior Independent Software Developer",
     "location": "Americas, Europe, Israel",
-    "salaryRange": "$90 - $150 /hour",
+    "salaryRange": "$150,000 - $220,000",
     "equity": "0.1% - 0.5%",
     "techStack": [
       "go",
@@ -1251,6 +1251,50 @@ window.SCRAPED_JOBS_FEED = [
     "description": "You must be located in the Americas, Europe, or Israel to apply.A·Team is a VC-backed, stealth, application-only home on the internet for senior independent software builders to team up with hand-pick...",
     "applyUrl": "https://remotive.com/remote-jobs/software-development/senior-independent-software-developer-1919265",
     "postedDate": "2026-08-16",
+    "healthStatus": "live_verified"
+  },
+  {
+    "id": "live-wellfound-2091068",
+    "source": "Wellfound",
+    "atsType": "wellfound",
+    "collectorId": "c_wellfound_collector_3b1",
+    "company": "garden3d",
+    "batch": "Series A",
+    "title": "Head of Marketing & Communications",
+    "location": "Worldwide",
+    "salaryRange": "$150,000 - $220,000",
+    "equity": "0.1% - 0.5%",
+    "techStack": [
+      "C",
+      "video",
+      "open source",
+      "AI/ML"
+    ],
+    "description": "We are hiring a Head of Marketing &amp; Communications to tell the garden3d story across the internet, from wherever in the world you happen to be.\nMore details if you check our original job posting l...",
+    "applyUrl": "https://remotive.com/remote-jobs/marketing/head-of-marketing-communications-2091068",
+    "postedDate": "2026-08-15",
+    "healthStatus": "live_verified"
+  },
+  {
+    "id": "live-wellfound-2069746",
+    "source": "Wellfound",
+    "atsType": "wellfound",
+    "collectorId": "c_wellfound_collector_3b1",
+    "company": "Mitre Media",
+    "batch": "Series A",
+    "title": "Tech Lead Full-Stack Rails Engineer",
+    "location": "USA, Canada, USA timezones",
+    "salaryRange": "$150,000 - $220,000",
+    "equity": "0.1% - 0.5%",
+    "techStack": [
+      "api",
+      "CSS",
+      "docker",
+      "elasticsearch"
+    ],
+    "description": "About Mitre Media\nMitre Media is redefining FinTech with AI-driven tools that empower millions of investors. Our portfolio, including Dividend.com and MutualFunds.com, leverages LLMs to deliver novel ...",
+    "applyUrl": "https://remotive.com/remote-jobs/software-development/tech-lead-full-stack-rails-engineer-2069746",
+    "postedDate": "2026-08-14",
     "healthStatus": "live_verified"
   }
 ];

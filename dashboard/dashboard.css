@@ -973,6 +973,8 @@ body {
   transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
+  min-height: 125px;
 }
 
 .job-card:hover {
