@@ -464,8 +464,9 @@ if (fillButton) {
       let mappedFormData = {};
       let detectedCompany = 'Startup';
       let detectedRole = 'Application';
+      let suggestions = [];
 
-      // If Gemini API Key is configured, use Gemini 2.0 Flash for semantic reasoning
+      // If Gemini API Key is configured, use Gemini 2.0 Flash for semantic reasoning & dynamic suggestions
       if (currentApiKey) {
         statusText.textContent = `Found ${scrapedFields.length} fields. Correlating via Gemini 2.0 Flash...`;
         const tone = toneSelect?.value || 'Professional & Concise';
@@ -477,6 +478,7 @@ if (fillButton) {
           TASKS:
           1. Map candidate's profile to the provided HTML form fields.
           2. Extract company name and role title from Page Title: "${tab.title}".
+          3. For open-ended, novel, or dynamic questions (e.g. essay questions, salary expectations, unique prompts) where the exact answer is not explicitly detailed in the candidate profile, generate a tailored, high-conviction AI suggestion based on candidate skills.
           
           CANDIDATE PROFILE:
           "${profileText.value}"
@@ -494,6 +496,14 @@ if (fillButton) {
             "formData": {
               "identifier_1": "answer_1"
             },
+            "suggestions": [
+              {
+                "identifier": "identifier_x",
+                "question": "Question label text",
+                "suggestedAnswer": "High-conviction suggested response tailored to candidate experience",
+                "reason": "Rationale"
+              }
+            ],
             "companyName": "Company extracted from page title or form context",
             "jobRole": "Role title extracted",
             "followUpQuestion": "Summary of action taken."
@@ -516,6 +526,7 @@ if (fillButton) {
               mappedFormData = parsed.formData;
               if (parsed.companyName) detectedCompany = parsed.companyName;
               if (parsed.jobRole) detectedRole = parsed.jobRole;
+              if (Array.isArray(parsed.suggestions)) suggestions = parsed.suggestions;
             }
           }
         } catch (geminiErr) {
@@ -539,6 +550,9 @@ if (fillButton) {
         func: fillPage,
         args: [mappedFormData]
       });
+
+      // Render Dynamic Suggestions if any
+      renderSuggestions(suggestions, tab.id);
 
       // Step 3: Automatically log to Application Pipeline
       chrome.storage.local.get(['scoutr_applications'], (res) => {
@@ -564,6 +578,51 @@ if (fillButton) {
     } finally {
       setLoading(false);
     }
+  });
+}
+
+function renderSuggestions(suggestions, tabId) {
+  const container = document.getElementById('suggestions-section');
+  const list = document.getElementById('suggestions-list');
+  const count = document.getElementById('suggestions-count');
+
+  if (!suggestions || suggestions.length === 0) {
+    if (container) container.style.display = 'none';
+    return;
+  }
+
+  if (container) container.style.display = 'flex';
+  if (count) count.textContent = `${suggestions.length} suggestion${suggestions.length > 1 ? 's' : ''}`;
+  if (list) list.innerHTML = '';
+
+  suggestions.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'suggestion-card';
+    card.innerHTML = `
+      <div class="suggestion-q">${item.question || 'Dynamic Field'}</div>
+      <div class="suggestion-ans">${item.suggestedAnswer || ''}</div>
+      <div class="suggestion-actions">
+        <button class="btn-apply-suggestion" data-id="${item.identifier}">
+          <span>⚡ Apply to Field</span>
+        </button>
+      </div>
+    `;
+
+    const btn = card.querySelector('.btn-apply-suggestion');
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Applying...';
+      const singleForm = { [item.identifier]: item.suggestedAnswer };
+      await chrome.scripting.executeScript({
+        target: { tabId: tabId, allFrames: true },
+        func: fillPage,
+        args: [singleForm]
+      });
+      btn.textContent = '✓ Applied';
+      btn.style.background = '#10b981';
+    });
+
+    list.appendChild(card);
   });
 }
 
