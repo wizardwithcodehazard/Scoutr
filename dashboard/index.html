@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scoutr — Autonomous Startup Career Engine</title>
+  <!-- Google Fonts: Inter & Fragment Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body class="landing-page">
+
+  <!-- FLOATING CAPSULE NAVBAR -->
+  <header class="navbar-wrapper">
+    <nav class="capsule-nav">
+      <div class="nav-brand">
+        <span class="brand-glyph">✦</span>
+        <span class="brand-title">scoutr</span>
+      </div>
+
+      <div class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#how-it-works" class="nav-link">How it Works</a>
+        <a href="#pricing" class="nav-link">Credits</a>
+        <a href="app.html" class="nav-link">Live App</a>
+      </div>
+
+      <div class="nav-cta-group">
+        <a href="app.html" class="btn-nav-primary">Launch Dashboard ↗</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO SECTION (GHOSTWRITER DAYTIME SKY) -->
+  <section class="hero-landing" id="hero">
+    <div class="clouds-bg">
+      <div class="cloud cloud-1"></div>
+      <div class="cloud cloud-2"></div>
+      <div class="cloud cloud-3"></div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="pulse-dot-hero"></span>
+        <span>Live Startup Intelligence · Powered by Bright Data Scraper Studio</span>
+      </div>
+
+      <h1 class="hero-heading">
+        Find and apply to startup jobs<br>on autopilot.
+      </h1>
+
+      <p class="hero-subheading">
+        Autonomous discovery across YC and startup ecosystems with self-healing scrapers and 1-click application
+        automation.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="app.html" class="btn-hero-white">get started free</a>
+        <a href="#features" class="btn-hero-glass">see features</a>
+      </div>
+    </div>
+
+    <!-- HERO PRODUCT PREVIEW CARD (MACOS MOCKUP) -->
+    <div class="hero-mockup-wrapper">
+      <div class="hero-mockup-card">
+        <div class="mockup-topbar">
+          <div class="mockup-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="mockup-title">Fresh startup roles scraped from live pipelines.</span>
+          <span class="mockup-pill mono">Live Pipeline Stream</span>
+        </div>
+
+        <!-- MOCKUP CONTENT PREVIEW -->
+        <div class="mockup-body-preview">
+          <div class="mockup-job-card">
+            <div>
+              <div class="mjc-top">
+                <div>
+                  <h4>ML & Systems Engineer</h4>
+                  <div class="mjc-meta"><strong>Raindrop</strong> <span class="badge-blue">W24</span></div>
+                </div>
+                <div class="mjc-star">96% Match</div>
+              </div>
+              <p class="mjc-desc">Building next-gen intelligent agents for enterprise workflows.</p>
+              <div class="mjc-tags">
+                <span class="tag-green">$150k - $250k</span>
+                <span class="tag-gray">Python</span>
+                <span class="tag-gray">LLMs</span>
+              </div>
+            </div>
+            <div class="mjc-bottom">
+              <span class="loc-text" title="San Francisco, CA (Hybrid)">San Francisco, CA</span>
+              <a href="app.html" class="btn-mockup-apply">Apply with Scoutr ↗</a>
+            </div>
+          </div>
+
+          <div class="mockup-job-card">
+            <div>
+              <div class="mjc-top">
+                <div>
+                  <h4>Senior AI Software Engineer</h4>
+                  <div class="mjc-meta"><strong>Athelas</strong> <span class="badge-blue">S16</span></div>
+                </div>
+                <div class="mjc-star">94% Match</div>
+              </div>
+              <p class="mjc-desc">Developing ambient AI technology that automates clinical trial workflows.</p>
+              <div class="mjc-tags">
+                <span class="tag-green">$170k - $230k</span>
+                <span class="tag-gray">React</span>
+                <span class="tag-gray">Python</span>
+              </div>
+            </div>
+            <div class="mjc-bottom">
+              <span class="loc-text" title="Mountain View, CA / Remote">Mountain View, CA</span>
+              <a href="app.html" class="btn-mockup-apply">Apply with Scoutr ↗</a>
+            </div>
+          </div>
+
+          <div class="mockup-job-card">
+            <div>
+              <div class="mjc-top">
+                <div>
+                  <h4>AI & Automation Engineer</h4>
+                  <div class="mjc-meta"><strong>Coast</strong> <span class="badge-blue">S21</span></div>
+                </div>
+                <div class="mjc-star">92% Match</div>
+              </div>
+              <p class="mjc-desc">Building modern financial infrastructure for vehicle fleets and logistics.</p>
+              <div class="mjc-tags">
+                <span class="tag-green">$170k - $225k</span>
+                <span class="tag-gray">FastAPI</span>
+                <span class="tag-gray">Postgres</span>
+              </div>
+            </div>
+            <div class="mjc-bottom">
+              <span class="loc-text" title="New York, NY, US">New York, NY</span>
+              <a href="app.html" class="btn-mockup-apply">Apply with Scoutr ↗</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="features-section" id="features">
+    <div class="section-container">
+      <div class="section-badge">Autonomous Pipeline</div>
+      <h2 class="features-title">Startup jobs delivered without the friction.</h2>
+      <p class="features-subtitle">Never browse fragile startup job boards again. Scoutr finds them, heals scrapers when
+        sites break, and fills forms for you.</p>
+
+      <div class="feature-pills-cluster">
+        <div class="feature-capsule"><i data-lucide="refresh-cw"></i><span>Self-healing scrapers</span></div>
+        <div class="feature-capsule"><i data-lucide="zap"></i><span>1-click form auto-fill</span></div>
+        <div class="feature-capsule"><i data-lucide="sparkles"></i><span>YC & Wellfound live feed</span></div>
+        <div class="feature-capsule"><i data-lucide="shield-check"></i><span>Local-first & private</span></div>
+      </div>
+
+      <!-- 3-STEP FLOW CARDS -->
+      <div class="process-grid" id="how-it-works">
+        <div class="process-card">
+          <div class="step-num">01</div>
+          <h3>Bright Data Scrapes the Long Tail</h3>
+          <p>Bright Data Scraper Studio runs custom collectors against Y Combinator and Wellfound hiring boards,
+            returning clean structured JSON with unblocked residential proxies.</p>
+        </div>
+
+        <div class="process-card">
+          <div class="step-num">02</div>
+          <h3>Self-Healing Sentinel Protects the Stream</h3>
+          <p>When target websites redesign their HTML or CSS selectors, <code>bdata scraper heal</code> rewrites the
+            extraction logic in 1.4s with zero downstream breaking changes.</p>
+        </div>
+
+        <div class="process-card">
+          <div class="step-num">03</div>
+          <h3>In-Browser AI Fills Applications</h3>
+          <p>Click "Apply with Scoutr" on any listing. The Chrome Extension inspects active form fields, maps your
+            resume via Gemini 2.0 Flash, and completes the application in &lt;1.8s.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE JOB SEARCH PHILOSOPHY SECTION (APPLE STORYTELLING) -->
+  <section class="philosophy-section">
+    <div class="section-container">
+      <div class="philosophy-grid">
+        <!-- PHOTO WITH EDITORIAL NARRATIVE -->
+        <div class="philosophy-card-media">
+          <div class="media-frame">
+            <img src="michael_safety.png" alt="Safety Training Day" class="media-img">
+            <div class="media-overlay-badge">
+              <span class="mono">The Office · S3, E20</span>
+            </div>
+          </div>
+          <div class="media-caption">
+            <span class="philosophy-tag">The Reality</span>
+            <h3>Job hunting shouldn't feel like surviving the roof.</h3>
+            <p>Filling 500 repetitive forms by hand drains the focus you need for what actually matters: building,
+              interviewing, and negotiating. Scoutr takes the friction off the table.</p>
+          </div>
+        </div>
+
+        <!-- THE ICONIC QUOTE WITH APPLE-GRADE STORYTELLING -->
+        <div class="philosophy-card-editorial">
+          <div class="editorial-inner">
+            <div class="quote-header">
+              <span class="philosophy-tag">The Mindset</span>
+            </div>
+
+            <blockquote class="apple-quote">
+              “You miss 100% of the shots you don’t take.”
+            </blockquote>
+
+            <div class="quote-attributions">
+              <span class="attr-primary">— Wayne Gretzky</span>
+            </div>
+
+            <div class="editorial-body">
+              <h4>Opportunity favors the proactive.</h4>
+              <p>The best startup roles rarely sit on saturated job boards. Scoutr quietly scrapes early-stage
+                pipelines, matches your profile, and puts your name forward the moment a role opens.</p>
+            </div>
+
+            <div class="editorial-stats">
+              <div class="stat-pill">
+                <strong>1.8s</strong>
+                <span>Avg Auto-Fill</span>
+              </div>
+              <div class="stat-pill">
+                <strong>100%</strong>
+                <span>Local Privacy</span>
+              </div>
+              <div class="stat-pill">
+                <strong>0</strong>
+                <span>Manual Busywork</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING & PLANS SECTION -->
+  <section class="pricing-section" id="pricing">
+    <div class="section-container">
+      <div class="section-badge">Plans & Pricing</div>
+      <h2 class="features-title">Simple pricing for serious work</h2>
+      <p class="features-subtitle">Start free or scale with high-throughput Bright Data Scraper Studio collectors.</p>
+
+      <div class="pricing-grid">
+        <div class="price-card">
+          <span class="plan-name">Community</span>
+          <div class="plan-price">$0</div>
+          <ul class="plan-features">
+            <li>✔ Local-First Chrome Extension</li>
+            <li>✔ In-browser AI form auto-filling</li>
+            <li>✔ Unlimited profile saving & OCR</li>
+            <li>✔ Application pipeline tracking</li>
+          </ul>
+          <a href="app.html" class="btn-plan">Get started</a>
+        </div>
+
+        <div class="price-card highlight-card">
+          <div class="pill-best-val">POPULAR</div>
+          <span class="plan-name">Pro Scraper</span>
+          <div class="plan-price">$20 <span>/ month</span></div>
+          <ul class="plan-features">
+            <li>✔ Unlimited collector triggers</li>
+            <li>✔ 5,000 monthly page loads included</li>
+            <li>✔ Self-healing scrapers with <code>bdata heal</code></li>
+            <li>✔ Live YC & Wellfound collectors</li>
+            <li>✔ Residential proxy unblocker mesh</li>
+          </ul>
+          <a href="app.html" class="btn-plan-dark">Launch Pro Workspace</a>
+        </div>
+
+        <div class="price-card">
+          <span class="plan-name">Enterprise / Scale</span>
+          <div class="plan-price">Custom</div>
+          <ul class="plan-features">
+            <li>✔ Custom ATS scraper endpoints</li>
+            <li>✔ High-concurrency proxy clusters</li>
+            <li>✔ Automated webhook ingestion</li>
+            <li>✔ Dedicated account manager</li>
+          </ul>
+          <a href="app.html" class="btn-plan">Explore architecture</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM CTA -->
+  <section class="bottom-cta-section">
+    <div class="bottom-cta-box">
+      <h2>Ready to get started?</h2>
+      <p>Discover fresh startup jobs and auto-fill applications with self-healing AI.</p>
+      <a href="app.html" class="btn-cta-large">Launch Scoutr Workspace Free</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer-section">
+    <div class="footer-card">
+      <div class="footer-left">
+        <div class="footer-brand">
+          <span class="brand-glyph">✦</span>
+          <span class="brand-title">scoutr</span>
+        </div>
+        <p class="footer-copy">Autonomous AI Career & Form Companion · Powered by Bright Data & Google Gemini</p>
+      </div>
+
+      <div class="footer-links">
+        <div class="link-col">
+          <strong>Navigation</strong>
+          <a href="#hero">Overview</a>
+          <a href="app.html">Live Workspace</a>
+          <a href="#features">Features</a>
+          <a href="#how-it-works">Architecture</a>
+        </div>
+        <div class="link-col">
+          <strong>Technology</strong>
+          <span>Bright Data Scraper Studio</span>
+          <span>Autonomous AST Regeneration</span>
+          <span>Google Gemini 2.0 Flash</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="lucide.js"></script>
+  <script>
+    if (window.lucide && lucide.createIcons) lucide.createIcons();
+
+    // 1. Adaptive Liquid Glass Navbar Scroll Handler
+    const navWrapper = document.querySelector('.navbar-wrapper');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 40) {
+        navWrapper.classList.add('scrolled');
+      } else {
+        navWrapper.classList.remove('scrolled');
+      }
+    });
+
+    // 2. Interactive Card Move & Tilt Physics on Landing Cards
+    const interactiveCards = document.querySelectorAll('.mockup-job-card, .process-card, .philosophy-card-media, .philosophy-card-editorial');
+    interactiveCards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -4;
+        const rotateY = ((x - centerX) / centerX) * 4;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
+      });
+    });
+  </script>
+</body>
+
+</html>

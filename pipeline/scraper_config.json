@@ -1,0 +1,58 @@
+{
+  "project": "Clairis Scraper Studio Engine",
+  "version": "2.0.0",
+  "brightdata": {
+    "cliPackage": "@brightdata/cli",
+    "endpoint": "https://api.brightdata.com/dca/trigger",
+    "freeCreditCode": "wemakedevs",
+    "pricingPer1kLoads": "$1.50"
+  },
+  "collectors": [
+    {
+      "id": "c_mt4s1dwc1n61l4s9i4",
+      "targetName": "Y Combinator (Work at a Startup)",
+      "targetUrl": "https://www.workatastartup.com/companies",
+      "prompt": "Extract company name, YC batch, job title, location, salary range, equity percentage, required tech stack tags, and direct apply link",
+      "status": "healthy_live",
+      "schemaFields": [
+        "company",
+        "batch",
+        "title",
+        "location",
+        "salaryRange",
+        "equity",
+        "techStack",
+        "applyUrl",
+        "description"
+      ],
+      "lastRun": "2026-08-23T01:10:00Z"
+    },
+    {
+      "id": "c_wf_talent_41e9",
+      "targetName": "Wellfound (AngelList Talent)",
+      "targetUrl": "https://wellfound.com/jobs",
+      "prompt": "Extract tech company name, funding stage, role title, compensation range, remote policy, tech stack, and direct apply link.",
+      "status": "healthy_self_healed",
+      "schemaFields": [
+        "company",
+        "batch",
+        "title",
+        "location",
+        "salaryRange",
+        "equity",
+        "techStack",
+        "applyUrl",
+        "description"
+      ],
+      "lastRun": "2026-08-23T01:00:00Z",
+      "healHistory": [
+        {
+          "timestamp": "2026-08-23T00:55:00Z",
+          "reason": "DOM class rename: .job-card .comp changed to [data-test='salary-range']",
+          "action": "bdata scraper heal c_wf_talent_41e9 'salary range moved to data-test attribute'",
+          "resolvedStatus": "200 OK - Schema intact"
+        }
+      ]
+    }
+  ]
+}

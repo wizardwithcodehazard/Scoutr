@@ -1,0 +1,23 @@
+{
+  "name": "scoutr",
+  "version": "2.0.0",
+  "description": "Autonomous Startup Career Engine powered by Bright Data Scraper Studio & Gemini AI",
+  "main": "pipeline/collector.js",
+  "scripts": {
+    "scrape": "node pipeline/collector.js",
+    "heal:demo": "node pipeline/heal_monitor.js",
+    "dashboard": "node dashboard/server.js",
+    "test": "node pipeline/heal_monitor.js"
+  },
+  "keywords": [
+    "bright-data",
+    "scraper-studio",
+    "self-healing",
+    "web-scraping",
+    "chrome-extension",
+    "gemini",
+    "job-automation"
+  ],
+  "author": "Sahil",
+  "license": "MIT"
+}

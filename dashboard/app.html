@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scoutr — Autonomous Startup Career Engine</title>
+  <!-- Google Fonts: Inter & Fragment Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body class="app-mode-body">
+
+  <!-- APP VIEW CONTAINER -->
+  <div class="app-standalone-container">
+    
+    <!-- TOP APP BAR -->
+    <header class="app-top-header">
+      <div class="brand-group">
+        <a href="index.html" class="app-brand-link">
+          <span class="brand-glyph">✦</span>
+          <span class="brand-title">scoutr</span>
+        </a>
+        <button class="telemetry-pill-light" id="open-telemetry-btn" title="Click to inspect Scraper Studio Sentinel">
+          <span class="pulse-dot"></span>
+          <span>Scraper Studio: <strong>OPERATIONAL</strong></span>
+          <span class="mono-badge">Self-Healing Ready</span>
+        </button>
+      </div>
+
+      <div class="app-nav-actions">
+        <a href="index.html" class="btn-app-secondary"><i data-lucide="arrow-left" class="w-icon"></i><span>Overview</span></a>
+        
+        <button class="btn-app-secondary" id="open-ext-guide-btn">
+          <i data-lucide="puzzle" class="w-icon"></i>
+          <span>Extension Setup</span>
+        </button>
+
+        <button class="btn-app-secondary" id="trigger-pipeline-btn">
+          <i data-lucide="refresh-cw" class="w-icon"></i>
+          <span>Sync Pipeline</span>
+        </button>
+
+        <div class="user-pill" id="user-switcher-btn" title="Click to edit candidate profile">
+          <div class="avatar">S</div>
+          <span id="user-name-display">Sahil (Active)</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN APP WINDOW -->
+    <main class="app-window app-window-standalone">
+      <!-- WINDOW NAVIGATION BAR -->
+      <div class="window-bar">
+        <div class="window-controls">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+
+        <div class="window-tabs">
+          <button class="w-tab active" data-tab="jobs-view">
+            <i data-lucide="sparkles" class="w-icon"></i>
+            <span>Live Discovery Stream</span>
+            <span class="w-badge" id="jobs-count-badge">0</span>
+          </button>
+          <button class="w-tab" data-tab="profile-view">
+            <i data-lucide="user-check" class="w-icon"></i>
+            <span>My Profiles & Resumes</span>
+            <span class="w-badge" id="profile-count-badge">1</span>
+          </button>
+          <button class="w-tab" data-tab="tracker-view">
+            <i data-lucide="kanban" class="w-icon"></i>
+            <span>Application Pipeline</span>
+            <span class="w-badge" id="tracker-count-badge">0</span>
+          </button>
+        </div>
+
+        <div class="window-tag-group">
+          <span class="live-status-pill">● Auto-Apply Ready</span>
+        </div>
+      </div>
+
+      <!-- WINDOW BODY PANES -->
+      <div class="window-body">
+        
+        <!-- VIEW 1: LIVE DISCOVERY STREAM (SPLIT-VIEW EXPLORER) -->
+        <section id="jobs-view" class="view-pane active">
+          <!-- FEED HEADER -->
+          <div class="feed-header-row">
+            <div>
+              <h2 class="section-title">Startup Roles & ATS Direct Stream</h2>
+              <p class="section-desc">Live matched against your active career profile with 1-click ATS application handoff</p>
+            </div>
+            <div class="active-profile-tag-pill" id="active-profile-feed-indicator" title="Click to customize profile">
+              <span>Matching: <strong id="feed-profile-name">Founding AI Engineer</strong></span>
+            </div>
+          </div>
+
+          <!-- SEARCH & FILTER TOOLBAR -->
+          <div class="filter-toolbar">
+            <div class="search-input-wrap">
+              <i data-lucide="search" class="search-ico"></i>
+              <input type="text" id="job-search-input" placeholder="Search by role title, startup name, stack (e.g. Python, React), or location...">
+            </div>
+
+            <div class="filter-pills-row">
+              <button class="f-pill active" data-source="all">All Sources</button>
+              <button class="f-pill" data-source="Ashby">Ashby ATS</button>
+              <button class="f-pill" data-source="Greenhouse">Greenhouse</button>
+              <button class="f-pill" data-source="Lever">Lever</button>
+              <button class="f-pill" data-source="Y Combinator">YC Startups</button>
+              <button class="f-pill" data-source="Wellfound">Wellfound</button>
+            </div>
+          </div>
+
+          <!-- MASTER-DETAIL SPLIT DISCOVERY VIEW -->
+          <div class="split-explorer-layout">
+            <!-- LEFT: JOBS LIST -->
+            <div class="jobs-list-pane" id="job-grid-container">
+              <!-- Dynamically populated -->
+            </div>
+
+            <!-- RIGHT: SELECTED ROLE DETAIL & ACTION DRAWER -->
+            <aside class="job-detail-pane" id="job-detail-drawer">
+              <div class="detail-empty-state" id="detail-placeholder">
+                <i data-lucide="mouse-pointer-click" class="empty-ico"></i>
+                <p class="empty-headline">Select a role to inspect</p>
+                <p class="empty-sub">View deep ATS requirements, matched skills, and 1-click apply action.</p>
+              </div>
+
+              <div class="detail-content" id="detail-card" style="display: none;">
+                <div class="detail-header">
+                  <div class="detail-header-top">
+                    <span id="detail-ats-pill" class="source-tag-pill mono">Ashby ATS</span>
+                    <span id="detail-match-score" class="star-match-pill top-match">96% Match</span>
+                  </div>
+                  <h3 id="detail-title" class="detail-title">ML Engineer / LLM Systems</h3>
+                  <div class="detail-meta">
+                    <strong id="detail-company">Linear</strong>
+                    <span id="detail-batch" class="batch-pill">Series B</span>
+                    <span class="detail-dot">•</span>
+                    <span id="detail-location">San Francisco, CA</span>
+                  </div>
+                </div>
+
+                <div class="detail-stats-row">
+                  <div class="d-stat">
+                    <span class="d-label">Compensation</span>
+                    <strong id="detail-salary" class="d-val">$175k - $235k</strong>
+                  </div>
+                  <div class="d-stat">
+                    <span class="d-label">Equity</span>
+                    <strong id="detail-equity" class="d-val">0.15% - 0.45%</strong>
+                  </div>
+                  <div class="d-stat">
+                    <span class="d-label">Date Scraped</span>
+                    <strong id="detail-date" class="d-val">Live Verified</strong>
+                  </div>
+                </div>
+
+                <div class="detail-section">
+                  <span class="detail-sec-heading">Required Stack & Match Analysis</span>
+                  <div class="detail-tags-row" id="detail-tech-tags">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+
+                <div class="detail-section">
+                  <span class="detail-sec-heading">Role Overview</span>
+                  <p id="detail-desc" class="detail-desc-text">Building intelligent workflow orchestration engines.</p>
+                </div>
+
+                <!-- 1-CLICK ACTION BAR -->
+                <div class="detail-action-bar">
+                  <button class="btn-primary-apply" id="detail-btn-apply">
+                    <i data-lucide="sparkles" class="w-icon"></i>
+                    <span>Apply with Scoutr</span>
+                    <i data-lucide="arrow-up-right" class="w-icon"></i>
+                  </button>
+                  
+                  <button class="btn-secondary-action" id="detail-btn-copy-pitch" title="Copy 2-sentence tailored intro pitch">
+                    <i data-lucide="copy" class="w-icon"></i>
+                    <span>Copy Pitch</span>
+                  </button>
+
+                  <button class="btn-secondary-action" id="detail-btn-track" title="Add to Pipeline Tracker">
+                    <i data-lucide="plus" class="w-icon"></i>
+                    <span>Track</span>
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- VIEW 2: PROFILE & RESUMES BUILDER -->
+        <section id="profile-view" class="view-pane">
+          <div class="feed-header-row">
+            <div>
+              <h2 class="section-title">Career Profiles & Resumes</h2>
+              <p class="section-desc">Manage targeted profiles for different roles. Synced 100% locally with your Chrome Extension.</p>
+            </div>
+            <button class="btn-light" id="create-new-profile-btn">
+              <i data-lucide="plus" class="w-icon"></i>
+              <span>+ New Profile</span>
+            </button>
+          </div>
+
+          <!-- PROFILE SWITCHER STRIP -->
+          <div class="profile-pills-strip" id="profile-pills-container">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- PROFILE EDITOR FORM -->
+          <div class="profile-editor-layout">
+            <!-- LEFT: RESUME DROPZONE / TEXT INGEST -->
+            <div class="resume-ingest-card">
+              <div class="card-section-header">
+                <i data-lucide="file-text" class="w-icon"></i>
+                <strong>Quick Resume Ingestion</strong>
+              </div>
+              <p class="section-desc" style="margin-bottom: 12px;">Paste your resume text or bio to auto-extract structured ATS fields in 1 click.</p>
+              
+              <textarea id="resume-raw-text" class="raw-resume-area" placeholder="Paste full resume text, projects, or work history here..."></textarea>
+              
+              <button class="btn-extract-resume" id="btn-parse-resume-text">
+                <i data-lucide="sparkles" class="w-icon"></i>
+                <span>Auto-Extract Profile Fields</span>
+              </button>
+            </div>
+
+            <!-- RIGHT: STRUCTURED FORM FIELDS -->
+            <div class="profile-form-card">
+              <form id="profile-edit-form">
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">Profile Label / Preset Name</label>
+                    <input type="text" id="prof-label" class="form-input" required placeholder="e.g. Founding AI Engineer">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="prof-fullname" class="form-input" required placeholder="e.g. Sahil Sharma">
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="prof-email" class="form-input" required placeholder="e.g. sahil@example.com">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" id="prof-phone" class="form-input" placeholder="e.g. +1 (555) 019-2834">
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">Location (City, Country)</label>
+                    <input type="text" id="prof-location" class="form-input" placeholder="e.g. San Francisco, CA / Remote">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Work Authorization</label>
+                    <select id="prof-work-auth" class="form-input">
+                      <option value="US Citizen / Permanent Resident">US Citizen / Green Card</option>
+                      <option value="Requires H-1B Visa Sponsorship">Requires Visa Sponsorship (H-1B, etc.)</option>
+                      <option value="Authorized to Work in EU/UK">Authorized to Work in EU / UK</option>
+                      <option value="Authorized to Work in Canada">Authorized to Work in Canada</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">LinkedIn Profile</label>
+                    <input type="url" id="prof-linkedin" class="form-input" placeholder="https://linkedin.com/in/username">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">GitHub Profile</label>
+                    <input type="url" id="prof-github" class="form-input" placeholder="https://github.com/username">
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">Personal Portfolio / Website</label>
+                    <input type="url" id="prof-portfolio" class="form-input" placeholder="https://yoursite.dev">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Twitter / X Profile</label>
+                    <input type="text" id="prof-twitter" class="form-input" placeholder="@username">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Target Role Titles (Comma-separated)</label>
+                  <input type="text" id="prof-target-roles" class="form-input" placeholder="e.g. Founding AI Engineer, Staff ML Engineer, Full Stack Architect">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Core Technical Skills (Comma-separated)</label>
+                  <input type="text" id="prof-skills" class="form-input" placeholder="e.g. Python, PyTorch, React, Next.js, PostgreSQL, Docker, FastAPI, Go">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Candidate Elevator Pitch / Narrative</label>
+                  <textarea id="prof-narrative" class="form-input form-textarea" rows="3" placeholder="Brief 2-3 sentence overview of your background, high-impact achievements, and engineering philosophy..."></textarea>
+                </div>
+
+                <div class="profile-actions-bar">
+                  <button type="button" class="btn-danger-light" id="btn-delete-profile">Delete Profile</button>
+                  <button type="submit" class="btn-save" id="btn-save-profile">Save & Sync with Extension</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 3: APPLICATION PIPELINE TRACKER -->
+        <section id="tracker-view" class="view-pane">
+          <div class="feed-header-row">
+            <div>
+              <h2 class="section-title">Application Pipeline Tracker</h2>
+              <p class="section-desc">Track real-time status across your startup applications</p>
+            </div>
+            <button class="btn-light" id="open-add-app-modal-btn">
+              <i data-lucide="plus" class="w-icon"></i>
+              <span>+ Log Application</span>
+            </button>
+          </div>
+
+          <!-- PIPELINE METRICS & FILTER BAR -->
+          <div class="pipeline-metrics-bar">
+            <button class="pipe-stat-btn active" data-tracker-filter="all">
+              <span class="p-label">Total Tracked</span>
+              <strong id="pipe-stat-total" class="p-count">0</strong>
+            </button>
+            <button class="pipe-stat-btn" data-tracker-filter="Applied">
+              <span class="p-label">Applied</span>
+              <strong id="pipe-stat-applied" class="p-count">0</strong>
+            </button>
+            <button class="pipe-stat-btn" data-tracker-filter="Clicked / Viewed">
+              <span class="p-label">Clicked / Staged</span>
+              <strong id="pipe-stat-clicked" class="p-count">0</strong>
+            </button>
+            <button class="pipe-stat-btn" data-tracker-filter="Interviewing">
+              <span class="p-label">Interviewing</span>
+              <strong id="pipe-stat-interview" class="p-count">0</strong>
+            </button>
+            <button class="pipe-stat-btn" data-tracker-filter="Offer Received">
+              <span class="p-label">Offers</span>
+              <strong id="pipe-stat-offers" class="p-count">0</strong>
+            </button>
+            <button class="pipe-stat-btn" data-tracker-filter="Rejected">
+              <span class="p-label">Rejected</span>
+              <strong id="pipe-stat-rejected" class="p-count">0</strong>
+            </button>
+          </div>
+
+          <div class="pipeline-table-card">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Role</th>
+                  <th>Source / ATS</th>
+                  <th>Applied Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="app-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+
+            <div class="empty-feed-state" id="empty-tracker-state" style="display: none;">
+              <i data-lucide="clipboard-list" class="empty-ico"></i>
+              <p class="empty-headline">No applications tracked yet</p>
+              <p class="empty-sub">Click "Apply with Scoutr" on any role to automatically log it here.</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL 1: SCRAPER SENTINEL & HEALTH MODAL -->
+  <div class="modal-overlay" id="telemetry-modal">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <div class="onboard-header-title">
+          <i data-lucide="activity" class="w-icon" style="color: var(--sky-top);"></i>
+          <h3 class="modal-title">Scraper Studio Sentinel & Telemetry</h3>
+        </div>
+        <button class="btn-close" id="close-telemetry-modal-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- SENTINEL BANNER -->
+        <div class="telemetry-banner">
+          <div class="telemetry-banner-text">
+            <h3>✦ Self-Healing Autonomous Sentinel: Active</h3>
+            <p>Monitors AST schemas and restores broken CSS selectors in 1.4s without changing downstream contracts.</p>
+          </div>
+          <button class="btn-heal-action" id="run-heal-simulation-btn">Simulate Layout Shift & Heal</button>
+        </div>
+
+        <!-- COLLECTOR METRICS ROW -->
+        <div class="collector-cards-row">
+          <div class="collector-box">
+            <div class="collector-box-top">
+              <span class="c-id">c_ashby_portal_8f2</span>
+              <span class="c-status status-healthy">Live Verified</span>
+            </div>
+            <div class="c-details">
+              <div class="c-row"><span>Target:</span> <strong>Ashby ATS Boards</strong></div>
+              <div class="c-row"><span>Extraction Rate:</span> <strong>100% Schema Health</strong></div>
+              <div class="c-row"><span>Last Heal Event:</span> <strong>Zero Failures</strong></div>
+            </div>
+          </div>
+
+          <div class="collector-box">
+            <div class="collector-box-top">
+              <span class="c-id">c_gh_portal_4e1</span>
+              <span class="c-status status-healed">Self-Healed</span>
+            </div>
+            <div class="c-details">
+              <div class="c-row"><span>Target:</span> <strong>Greenhouse Portals</strong></div>
+              <div class="c-row"><span>Extraction Rate:</span> <strong>100% Restored</strong></div>
+              <div class="c-row"><span>Last Heal Event:</span> <strong>1.4s AST Recovery</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TERMINAL LOG -->
+        <div class="clean-terminal">
+          <div class="terminal-header">
+            <span class="terminal-label">Sentinel AST Event Stream</span>
+            <span class="terminal-tag mono">bdata scraper heal</span>
+          </div>
+          <div class="terminal-screen" id="telemetry-terminal">
+            <div class="term-line"><span class="term-time">[03:10:04]</span> <span class="term-info">INITIALIZED:</span> Scraper Studio residential unblocker mesh active.</div>
+            <div class="term-line"><span class="term-time">[03:10:05]</span> <span class="term-success">LIVE:</span> Connected to collectors c_ashby_portal_8f2, c_gh_portal_4e1.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: EXTENSION SETUP GUIDE -->
+  <div class="modal-overlay" id="ext-guide-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Chrome Extension Setup</h3>
+        <button class="btn-close" id="close-ext-guide-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="ext-step-card">
+          <div class="step-num-badge">1</div>
+          <div>
+            <strong>Open Chrome Extensions</strong>
+            <p>Navigate to <code>chrome://extensions</code> in your browser and toggle on <strong>Developer mode</strong>.</p>
+          </div>
+        </div>
+        <div class="ext-step-card">
+          <div class="step-num-badge">2</div>
+          <div>
+            <strong>Load Unpacked Extension</strong>
+            <p>Click <strong>Load unpacked</strong> and select the <code>clairis/extension</code> folder.</p>
+          </div>
+        </div>
+        <div class="ext-step-card">
+          <div class="step-num-badge">3</div>
+          <div>
+            <strong>Auto-Fill Any ATS Form</strong>
+            <p>Click "Apply with Scoutr" on any listing. Open the extension popup to autofill in &lt;1.8s.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: FIRST-TIME ONBOARDING -->
+  <div class="modal-overlay" id="onboarding-modal">
+    <div class="modal-card onboarding-card">
+      <div class="modal-header">
+        <div class="onboard-header-title">
+          <span class="brand-glyph">✦</span>
+          <h3 class="modal-title">Welcome to Scoutr — Set Up Your Career Engine</h3>
+        </div>
+        <button class="btn-close" id="close-onboarding-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <span class="onboard-step-pill">1-Time Quick Onboarding</span>
+        <p class="section-desc">Create your primary career identity. Scoutr will customize live job discovery and sync with your in-browser auto-filler.</p>
+
+        <form id="onboard-form">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" id="onboard-name" class="form-input" required placeholder="e.g. Sahil Sharma">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" id="onboard-email" class="form-input" required placeholder="e.g. sahil@example.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Target Role (e.g. Founding AI Engineer)</label>
+            <input type="text" id="onboard-target" class="form-input" required placeholder="e.g. Founding AI Engineer, Staff ML">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Core Technical Stack</label>
+            <input type="text" id="onboard-skills" class="form-input" required placeholder="e.g. Python, PyTorch, React, TypeScript, PostgreSQL">
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">LinkedIn URL</label>
+              <input type="url" id="onboard-linkedin" class="form-input" placeholder="https://linkedin.com/in/username">
+            </div>
+            <div class="form-group">
+              <label class="form-label">GitHub URL</label>
+              <input type="url" id="onboard-github" class="form-input" placeholder="https://github.com/username">
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="skip-onboarding-btn">Skip for now</button>
+            <button type="submit" class="btn-save">Save & Launch Workspace ↗</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: MANUAL APPLICATION LOGGING -->
+  <div class="modal-overlay" id="app-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Track Application</h3>
+        <button class="btn-close" id="close-app-modal-btn">✕</button>
+      </div>
+      <form id="app-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Company Name</label>
+            <input type="text" id="manual-company" class="form-input" required placeholder="e.g. Linear">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role Title</label>
+            <input type="text" id="manual-role" class="form-input" required placeholder="e.g. Staff Fullstack Engineer">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Source / ATS</label>
+            <input type="text" id="manual-source" class="form-input" placeholder="e.g. Ashby ATS / Greenhouse">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Application Status</label>
+            <select id="manual-status" class="form-input">
+              <option value="Applied">Applied</option>
+              <option value="Interviewing">Interviewing</option>
+              <option value="Offer Received">Offer Received</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" id="cancel-app-btn">Cancel</button>
+          <button type="submit" class="btn-save">Save Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast">Action completed successfully</div>
+
+  <!-- Scripts -->
+  <script src="lucide.js"></script>
+  <script src="jobs_feed.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

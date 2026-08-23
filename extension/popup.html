@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scoutr — In-Browser Form Companion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- HEADER -->
+    <header class="popup-header">
+      <div class="brand">
+        <span class="icon">✦</span>
+        <div class="brand-text">
+          <h1>SCOUTR</h1>
+          <span class="subtext">Auto-Apply Engine</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="open-dashboard-btn" class="icon-btn" title="Open Command Center">
+          <i data-lucide="layout-dashboard"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- PROFILE SELECTOR -->
+    <div class="card-section">
+      <div class="section-row">
+        <label class="label">Candidate Profile</label>
+        <div class="profile-actions">
+          <select id="profile-select" class="select-input">
+            <option value="">-- Select Profile --</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="profile-name-row">
+        <input type="text" id="profile-name" class="text-input" placeholder="Profile Label (e.g. AI Engineer)">
+        <button id="save-profile-btn" class="btn-sm btn-secondary">Save</button>
+        <button id="delete-profile-btn" class="btn-sm btn-danger" title="Delete Profile">✕</button>
+      </div>
+
+      <textarea id="user-profile" class="profile-textarea" rows="4" placeholder="Paste your resume summary, bio, GitHub, LinkedIn, and past experience here..."></textarea>
+      
+      <div class="voice-ocr-row">
+        <button id="record-btn" class="btn-action">
+          <i data-lucide="mic" class="btn-icon"></i>
+          <span>Voice Dictate</span>
+        </button>
+
+        <label for="image-upload" class="btn-action upload-label">
+          <i data-lucide="camera" class="btn-icon"></i>
+          <span>Resume OCR</span>
+          <input type="file" id="image-upload" accept="image/*" style="display: none;">
+        </label>
+      </div>
+
+      <div id="image-preview-container" class="preview-wrap" style="display: none;">
+        <img id="image-preview" src="" alt="OCR Preview">
+        <button id="clear-image-btn" class="clear-btn">Remove</button>
+      </div>
+      <div id="file-status" class="status-hint"></div>
+    </div>
+
+    <!-- SETTINGS ROW -->
+    <div class="settings-row">
+      <div class="setting-item">
+        <label>Tone</label>
+        <select id="tone-select" class="select-input">
+          <option value="Professional & Concise">Professional</option>
+          <option value="Empathetic & Warm">Empathetic</option>
+          <option value="High Energy">High Energy</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>Language</label>
+        <input type="text" id="language-input" class="text-input" value="English">
+      </div>
+    </div>
+
+    <!-- MAIN AUTO-FILL ACTION -->
+    <div class="action-footer">
+      <button id="fill-btn" class="btn-primary-action">
+        <i data-lucide="sparkles"></i>
+        <span>Scan & Auto-Fill Form</span>
+      </button>
+      <div id="status" class="status-message">Ready to inspect active application page.</div>
+      <div class="security-badge">
+        <span>🔒</span> <span>Local-First Storage · Zero User Tracking</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="lucide.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
