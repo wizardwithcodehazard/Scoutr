@@ -27,37 +27,37 @@ Scoutr operates across three decoupled layers: **Bright Data Ingestion & Self-He
 
 ```mermaid
 flowchart TD
-    subgraph Discovery["Bright Data Ingestion Layer"]
-        A["Startup ATS Portals<br/>(Ashby, Greenhouse, Lever, YC, Wellfound)"]
-        B["Scraper Studio Collectors<br/>(Multi-Source Pipeline)"]
+    subgraph Discovery["1. Bright Data Ingestion Layer"]
+        A["Startup ATS Portals<br/>(Ashby, Greenhouse, Lever, YC)"]
+        B["Scraper Studio Collectors<br/>(Parallel Multi-Source Pipeline)"]
         C["AST Self-Healing Sentinel<br/>(bdata scraper heal)"]
-        D["Stale-Listing Filter<br/>(<30d Freshness Sentinel)"]
-        E["Ingestion Server API<br/>(dashboard/server.js)"]
+        D["Stale-Listing Filter<br/>(30-Day Freshness Gate)"]
+        E["Dynamic Ingestion Server<br/>(dashboard/server.js)"]
     end
 
-    subgraph Command["Scoutr Command Center"]
-        F["Linear-Style Split Explorer<br/>(localhost:3000/app)"]
-        G["Gemini 3.5 Flash Lite<br/>(Semantic Re-Ranking & Scoring)"]
-        H["Strict Token Matcher<br/>(Word Boundary & Acronym Engine)"]
+    subgraph Command["2. Scoutr Command Center"]
+        F["Linear-Style Split Explorer<br/>(Active Jobs Feed)"]
+        G["Gemini 3.5 Flash Lite<br/>(Semantic Re-Ranking Engine)"]
+        H["Strict Token Matcher<br/>(Regex Word-Boundary Search)"]
         I["Pipeline Tracker<br/>(Applied, Interviewing, Offers)"]
-        J["Responsive Pagination<br/>(Mobile & Desktop View)"]
+        J["Responsive Pagination<br/>(Mobile & Desktop Views)"]
     end
 
-    subgraph Extension["Chrome Extension Companion"]
-        K["Live ATS Job Page<br/>(Target Application Form)"]
+    subgraph Extension["3. Chrome Extension Companion"]
+        K["Live Target ATS Page<br/>(Job Application Form)"]
         L["In-Browser DOM Scanner<br/>(scrapePageForForms)"]
-        M["Gemini 3.5 Semantic Mapper<br/>(Dynamic Field Mapping & Suggestions)"]
+        M["Gemini 3.5 Semantic Mapper<br/>(Dynamic Field Autofill)"]
         N["Synthetic Event Dispatcher<br/>(input, change, blur)"]
     end
 
     A -->|bdata run| B
-    B -->|DOM Shift| C
-    C -->|AST Fixed| B
+    B -->|DOM Shift Detected| C
+    C -->|AST Repaired| B
     B -->|Active Feed| D
     D -->|Fresh Stream| E
 
-    E -->|Live Query| G
-    E -->|Regex Match| H
+    E -->|Semantic Query| G
+    E -->|Word Match| H
     G --> F
     H --> F
     F --> I
@@ -67,7 +67,7 @@ flowchart TD
     K --> L
     L --> M
     M --> N
-    N -->|Auto-Log| I
+    N -->|Auto-Log Status| I
 ```
 
 ---
