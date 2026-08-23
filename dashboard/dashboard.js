@@ -192,62 +192,31 @@ function updateProfileBadges() {
 // ==========================================================================
 async function loadJobsFeed(forceLiveScrape = false) {
   const currentProf = userProfiles[activeProfileIndex] || {};
+  const query = currentProf.targetRoles || currentProf.name || '';
+  const skills = (currentProf.skills || '').split(/[,/\n]+/).map(s => s.trim()).filter(Boolean);
 
-  // If forceLiveScrape is requested (e.g. Sync Pipeline button clicked)
-  if (forceLiveScrape) {
-    try {
-      showToast('Connecting to live Bright Data scrapers across startup boards...');
-      const res = await fetch('/api/scrape-live', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: currentProf.targetRoles || currentProf.name || '',
-          skills: (currentProf.skills || '').split(/[,/\n]+/).map(s => s.trim()).filter(Boolean)
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.jobs && data.jobs.length > 0) {
-          jobsData = data.jobs;
-          localStorage.setItem('scoutr_cached_jobs', JSON.stringify(jobsData));
-          renderJobs();
-          showToast(`Pipeline sync complete! ${data.jobs.length} live startup roles loaded.`);
-          return;
-        }
-      }
-    } catch (e) {
-      console.warn('Live API scrape error, falling back to cache:', e);
-    }
-  }
-
-  // Cost-efficient 0ms Cache Loading
   try {
-    const cached = localStorage.getItem('scoutr_cached_jobs');
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        jobsData = parsed;
+    const url = forceLiveScrape 
+      ? `/api/jobs?refresh=true&q=${encodeURIComponent(query)}` 
+      : (query ? `/api/jobs?q=${encodeURIComponent(query)}` : `/api/jobs`);
+    
+    const res = await fetch(url);
+    if (res.ok) {
+      const liveJobs = await res.json();
+      if (Array.isArray(liveJobs) && liveJobs.length > 0) {
+        jobsData = liveJobs;
         renderJobs();
         return;
       }
     }
-  } catch (e) {}
-
-  // Fallback to static pre-bundled feed
-  if (window.SCRAPED_JOBS_FEED && Array.isArray(window.SCRAPED_JOBS_FEED) && window.SCRAPED_JOBS_FEED.length > 0) {
-    jobsData = window.SCRAPED_JOBS_FEED;
-  } else {
-    try {
-      const res = await fetch('jobs_feed.json');
-      if (res.ok) {
-        jobsData = await res.json();
-        localStorage.setItem('scoutr_cached_jobs', JSON.stringify(jobsData));
-      }
-    } catch (err) {
-      jobsData = [];
-    }
+  } catch (e) {
+    console.warn('[FEED] Fetch error:', e);
   }
 
+  // Fallback to pre-warmed memory feed if network offline
+  if (window.SCRAPED_JOBS_FEED && Array.isArray(window.SCRAPED_JOBS_FEED) && window.SCRAPED_JOBS_FEED.length > 0) {
+    jobsData = window.SCRAPED_JOBS_FEED;
+  }
   renderJobs();
 }
 
