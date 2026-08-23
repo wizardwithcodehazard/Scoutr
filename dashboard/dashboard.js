@@ -325,20 +325,30 @@ function renderJobs() {
       matchesSource = job.source && job.source.toLowerCase().includes(activeFilter.toLowerCase());
     }
 
-    const matchesQuery = !searchQuery ||
-      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (job.techStack && job.techStack.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
+    let matchesQuery = true;
+    if (searchQuery && searchQuery.trim()) {
+      const qWords = searchQuery.toLowerCase().trim().split(/[\s,+/]+/).filter(w => w.length > 0);
+      const titleLower = (job.title || '').toLowerCase();
+      const companyLower = (job.company || '').toLowerCase();
+      const descLower = (job.description || '').toLowerCase();
+      const stackStr = (job.techStack || []).join(' ').toLowerCase();
+      const sourceStr = (job.source || '').toLowerCase();
+      const locStr = (job.location || '').toLowerCase();
+      const combined = `${titleLower} ${companyLower} ${descLower} ${stackStr} ${sourceStr} ${locStr}`;
+
+      matchesQuery = qWords.every(w => combined.includes(w));
+    }
     return matchesSource && matchesQuery;
   });
 
   if (jobsCountBadge) jobsCountBadge.textContent = filtered.length;
 
   if (filtered.length === 0) {
+    const term = searchQuery ? `"${escapeHtml(searchQuery)}"` : `"${escapeHtml(activeFilter)}"`;
     jobGrid.innerHTML = `
       <div class="empty-feed-state" style="grid-column: 1 / -1;">
-        <p class="empty-headline">No matching jobs found for "${escapeHtml(activeFilter)}"</p>
-        <p class="empty-sub">Try selecting "All Sources" or modifying your target role keywords.</p>
+        <p class="empty-headline">No matching jobs found for ${term}</p>
+        <p class="empty-sub">Try broadening your search query or selecting "All Sources".</p>
       </div>
     `;
     return;

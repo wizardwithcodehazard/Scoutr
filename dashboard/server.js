@@ -135,7 +135,7 @@ async function scrapeLiveStartupJobs(query = '', skills = []) {
   const queryWords = (query || '')
     .toLowerCase()
     .split(/[\s,/\n]+/)
-    .filter(w => w.length > 2 && !['and', 'for', 'the', 'with'].includes(w));
+    .filter(w => w.length >= 2 && !['and', 'for', 'the', 'with'].includes(w));
 
   const matchesFilter = (text) => {
     if (queryWords.length === 0) return true;
