@@ -119,6 +119,20 @@ flowchart LR
 
 ---
 
+## AI-Assisted Development
+
+This project was developed with the assistance of AI coding agents, primarily using **Google Antigravity**.
+
+### AI Agents & Models Used
+
+- **Google Antigravity** — Primary AI-assisted development environment and coding agent.
+- **Google Gemini 3.5 Flash / Flash Lite** — Used for code generation, debugging, implementation, and iterative development.
+- **Claude Sonnet** — Used for architectural reasoning, implementation assistance, debugging, and code review.
+
+AI assistance was used throughout development for **architecture exploration, implementation, debugging, optimization, and documentation**. The development team reviewed, tested, and understood the generated code and can explain the implementation and system architecture.
+
+---
+
 ## Scraper Studio Multi-Source Architecture
 
 Scoutr organizes data collection across dedicated ATS pipelines:
